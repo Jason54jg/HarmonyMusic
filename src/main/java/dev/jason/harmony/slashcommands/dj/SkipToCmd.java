@@ -27,7 +27,6 @@ public class SkipToCmd extends DJCommand {
         List<OptionData> options = new ArrayList<>();
         options.add(new OptionData(OptionType.INTEGER, "position", "position", true));
         this.options = options;
-
     }
 
     @Override

@@ -11,7 +11,7 @@ public class ForceskipCmd extends DJCommand {
     public ForceskipCmd(Bot bot) {
         super(bot);
         this.name = "forceskip";
-        this.help = "sauter la chanson en cours";
+        this.help = "Passer la chanson en cours";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.bePlaying = true;
     }
@@ -21,7 +21,7 @@ public class ForceskipCmd extends DJCommand {
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         RequestMetadata rm = handler.getRequestMetadata();
         event.reply(event.getClient().getSuccess() + "**" + handler.getPlayer().getPlayingTrack().getInfo().title
-                + "** " + (rm.getOwner() == 0L ? "(autoplay)": "(demandé par **" + rm.user.username + "**)"));
+                + "** " + (rm.getOwner() == 0L ? "(lecture automatique)" : "(demandé par **" + rm.user.username + "**)"));
         handler.getPlayer().stopTrack();
     }
 
@@ -34,7 +34,7 @@ public class ForceskipCmd extends DJCommand {
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         RequestMetadata rm = handler.getRequestMetadata();
         event.reply(event.getClient().getSuccess() + "**" + handler.getPlayer().getPlayingTrack().getInfo().title
-                + "** " + (rm.getOwner() == 0L ? "(autoplay)": "(demandé par **" + rm.user.username + "**)")).queue();
+                + "** " + (rm.getOwner() == 0L ? "(lecture automatique)" : "(demandé par **" + rm.user.username + "**)")).queue();
         handler.getPlayer().stopTrack();
     }
 }

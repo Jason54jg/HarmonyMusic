@@ -15,20 +15,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class CashCmd extends SlashCommand {
-    private final Paginator.Builder builder;
+public class CommandeCache extends SlashCommand {
+    private final Paginator.Builder constructeurPaginator;
     public Bot bot;
 
-    public CashCmd(Bot bot) {
+    public CommandeCache(Bot bot) {
         this.bot = bot;
         this.name = "cache";
         this.help = "Affiche les chansons stockées dans le cache.";
         this.guildOnly = true;
-        this.category = new Category("General");
+        this.category = new Category("Général");
         this.aliases = bot.getConfig().getAliases(this.name);
-        this.children = new SlashCommand[]{new DeleteCmd(bot), new ShowCmd(bot)};
+        this.children = new SlashCommand[]{new CommandeSupprimer(bot), new CommandeAfficher(bot)};
         this.botPermissions = new Permission[]{Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS};
-        builder = new Paginator.Builder()
+        constructeurPaginator = new Paginator.Builder()
                 .setColumns(1)
                 .setFinalAction(m -> {
                     try {
@@ -63,34 +63,34 @@ public class CashCmd extends SlashCommand {
 
         List<Cache> cache = bot.getCacheLoader().GetCache(event.getGuild().getId());
 
-        String[] songs = new String[cache.size()];
+        String[] chansons = new String[cache.size()];
         long total = 0;
         for (int i = 0; i < cache.size(); i++) {
             total += Long.parseLong(cache.get(i).getLength());
-            songs[i] = "`[" + FormatUtil.formatTime(Long.parseLong(cache.get(i).getLength())) + "]` **" + cache.get(i).getTitle() + "** - <@" + cache.get(i).getUserId() + ">";
+            chansons[i] = "`[" + FormatUtil.formatTime(Long.parseLong(cache.get(i).getLength())) + "]` **" + cache.get(i).getTitle() + "** - <@" + cache.get(i).getUserId() + ">";
         }
         long finTotal = total;
-        builder.setText((i1, i2) -> getQueueTitle(event.getClient().getSuccess(), songs.length, finTotal))
-                .setItems(songs)
+        constructeurPaginator.setText((i1, i2) -> obtenirTitreQueue(event.getClient().getSuccess(), chansons.length, finTotal))
+                .setItems(chansons)
                 .setUsers(event.getAuthor())
                 .setColor(event.getSelfMember().getColor())
         ;
-        builder.build().paginate(event.getChannel(), pagenum);
+        constructeurPaginator.build().paginate(event.getChannel(), pagenum);
     }
 
-    private String getQueueTitle(String success, int songsLength, long total) {
+    private String obtenirTitreQueue(String success, int longueurChansons, long total) {
         StringBuilder sb = new StringBuilder();
 
-        return FormatUtil.filter(sb.append(success).append(" Liste des chansons en cache | ").append(songsLength)
-                .append(" 曲 | `").append(FormatUtil.formatTime(total)).append("` ")
+        return FormatUtil.filter(sb.append(success).append(" Liste des chansons en cache | ").append(longueurChansons)
+                .append(" Chansons | `").append(FormatUtil.formatTime(total)).append("` ")
                 .toString());
     }
 
-    public static class DeleteCmd extends DJCommand {
-        public DeleteCmd(Bot bot) {
+    public static class CommandeSupprimer extends DJCommand {
+        public CommandeSupprimer(Bot bot) {
             super(bot);
-            this.name = "delete";
-            this.aliases = new String[]{"dl", "clear"};
+            this.name = "supprimer";
+            this.aliases = new String[]{"dl", "effacer"};
             this.help = "Supprimez le cache stocké.";
             this.guildOnly = true;
         }
@@ -130,15 +130,15 @@ public class CashCmd extends SlashCommand {
         }
     }
 
-    public class ShowCmd extends SlashCommand {
-        private final Paginator.Builder builder;
+    public class CommandeAfficher extends SlashCommand {
+        private final Paginator.Builder constructeurPaginator;
 
-        public ShowCmd(Bot bot) {
-            this.name = "show";
+        public CommandeAfficher(Bot bot) {
+            this.name = "afficher";
             this.help = "Liste des chansons en cache.";
             this.guildOnly = true;
             this.botPermissions = new Permission[]{Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS};
-            builder = new Paginator.Builder()
+            constructeurPaginator = new Paginator.Builder()
                     .setColumns(1)
                     .setFinalAction(m -> {
                         try {
@@ -166,19 +166,18 @@ public class CashCmd extends SlashCommand {
 
             List<Cache> cache = bot.getCacheLoader().GetCache(event.getGuild().getId());
 
-            String[] songs = new String[cache.size()];
+            String[] chansons = new String[cache.size()];
             long total = 0;
             for (int i = 0; i < cache.size(); i++) {
                 total += Long.parseLong(cache.get(i).getLength());
-                songs[i] = "`[" + FormatUtil.formatTime(Long.parseLong(cache.get(i).getLength())) + "]` **" + cache.get(i).getTitle() + "** - <@" + cache.get(i).getUserId() + ">";
+                chansons[i] = "`[" + FormatUtil.formatTime(Long.parseLong(cache.get(i).getLength())) + "]` **" + cache.get(i).getTitle() + "** - <@" + cache.get(i).getUserId() + ">";
             }
             long finTotal = total;
-            builder.setText((i1, i2) -> getQueueTitle(event.getClient().getSuccess(), songs.length, finTotal))
-                    .setItems(songs)
+            constructeurPaginator.setText((i1, i2) -> obtenirTitreQueue(event.getClient().getSuccess(), chansons.length, finTotal))
+                    .setItems(chansons)
                     .setUsers(event.getUser())
                     .setColor(event.getMember().getColor());
-            builder.build().paginate(event.getChannel(), pagenum);
+            constructeurPaginator.build().paginate(event.getChannel(), pagenum);
         }
-
     }
 }

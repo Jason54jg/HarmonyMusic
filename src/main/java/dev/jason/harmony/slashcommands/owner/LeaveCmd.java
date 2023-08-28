@@ -25,15 +25,17 @@ public class LeaveCmd extends OwnerCommand {
     protected void execute(SlashCommandEvent event) {
         String id = event.getOption("serverid").getAsString();
         event.getJDA().getGuildById(id).leave().queue();
+        event.reply("Je me suis retiré du serveur avec l'identifiant : " + id).queue();
     }
 
     @Override
     protected void execute(CommandEvent event) {
         if (event.getArgs().isEmpty()) {
-            event.reply(event.getClient().getError() + "Donnez-lui le nom du rôle, ou quelque chose comme AUCUN.");
+            event.reply(event.getClient().getError() + "Veuillez fournir l'identifiant du serveur auquel vous souhaitez que je me retire.");
             return;
         }
 
         event.getJDA().getGuildById(event.getArgs()).leave().queue();
+        event.reply("Je me suis retiré du serveur avec l'identifiant : " + event.getArgs());
     }
 }

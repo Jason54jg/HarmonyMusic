@@ -14,12 +14,12 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LyricsCmd extends MusicCommand {
+public class ParolesCmd extends MusicCommand {
     private final LyricsClient lClient = new LyricsClient();
 
-    public LyricsCmd(Bot bot) {
+    public ParolesCmd(Bot bot) {
         super(bot);
-        this.name = "lyrics";
+        this.name = "paroles";
         this.arguments = "[titre de la chanson]";
         this.help = "Afficher les paroles des chansons";
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
@@ -27,7 +27,7 @@ public class LyricsCmd extends MusicCommand {
         this.bePlaying = true;
 
         List<OptionData> options = new ArrayList<>();
-        options.add(new OptionData(OptionType.STRING, "name", "曲名", false));
+        options.add(new OptionData(OptionType.STRING, "name", "nom de la chanson", false));
         this.options = options;
     }
 
@@ -40,7 +40,7 @@ public class LyricsCmd extends MusicCommand {
             if (sendingHandler.isMusicPlaying(event.getJDA()))
                 title = sendingHandler.getPlayer().getPlayingTrack().getInfo().title;
             else {
-                event.reply(event.getClient().getError() + "Ne peut pas être utilisé car la chanson n'est pas en cours de lecture.").queue();
+                event.reply(event.getClient().getError() + "Impossible d'utiliser cette commande car aucune chanson n'est en cours de lecture.").queue();
                 return;
             }
         } else
@@ -48,7 +48,7 @@ public class LyricsCmd extends MusicCommand {
         lClient.getLyrics(title).thenAccept(lyrics ->
         {
             if (lyrics == null) {
-                event.reply(event.getClient().getError() + "`" + title + "` Impossible de trouver les paroles de" + (event.getOption("name").getAsString().isEmpty() ? "Essayez d'entrer le nom de la chanson manuellement (`lyrics [nom de la chanson]`)" : "")).queue();
+                event.reply(event.getClient().getError() + "`" + title + "` : Paroles introuvables" + (event.getOption("name").getAsString().isEmpty() ? ". Essayez d'entrer le nom de la chanson manuellement (`/lyrics [nom de la chanson]`)." : ".")).queue();
                 return;
             }
 
@@ -57,7 +57,7 @@ public class LyricsCmd extends MusicCommand {
                     .setColor(event.getMember().getColor())
                     .setTitle(lyrics.getTitle(), lyrics.getURL());
             if (lyrics.getContent().length() > 15000) {
-                event.reply(event.getClient().getWarning() + " Chanson trouvée avec des paroles pour `" + title + "` mais peut être incorrecte: " + lyrics.getURL()).queue();
+                event.reply(event.getClient().getWarning() + " Chanson trouvée avec des paroles pour `" + title + "`, mais elles peuvent être incorrectes : " + lyrics.getURL()).queue();
             } else if (lyrics.getContent().length() > 2000) {
                 String content = lyrics.getContent().trim();
                 while (content.length() > 2000) {
@@ -87,7 +87,7 @@ public class LyricsCmd extends MusicCommand {
             if (sendingHandler.isMusicPlaying(event.getJDA()))
                 title = sendingHandler.getPlayer().getPlayingTrack().getInfo().title;
             else {
-                event.replyError("Ne peut pas être utilisé car la chanson n'est pas en cours de lecture.");
+                event.replyError("Impossible d'utiliser cette commande car aucune chanson n'est en cours de lecture.");
                 return;
             }
         } else
@@ -95,7 +95,7 @@ public class LyricsCmd extends MusicCommand {
         lClient.getLyrics(title).thenAccept(lyrics ->
         {
             if (lyrics == null) {
-                event.replyError("`" + title + "` paroles introuvables." + (event.getArgs().isEmpty() ? " Essayez d'entrer le titre de la chanson manuellement (`lyrics [nom de la chanson]`)" : ""));
+                event.replyError("`" + title + "` : Paroles introuvables" + (event.getArgs().isEmpty() ? ". Essayez d'entrer le titre de la chanson manuellement (`/lyrics [nom de la chanson]`)." : "."));
                 return;
             }
 
@@ -104,7 +104,7 @@ public class LyricsCmd extends MusicCommand {
                     .setColor(event.getSelfMember().getColor())
                     .setTitle(lyrics.getTitle(), lyrics.getURL());
             if (lyrics.getContent().length() > 15000) {
-                event.replyWarning(" Chanson trouvée avec des paroles pour `" + title + "` mais peut être incorrecte : " + lyrics.getURL());
+                event.replyWarning("Chanson trouvée avec des paroles pour `" + title + "`, mais elles peuvent être incorrectes : " + lyrics.getURL());
             } else if (lyrics.getContent().length() > 2000) {
                 String content = lyrics.getContent().trim();
                 while (content.length() > 2000) {

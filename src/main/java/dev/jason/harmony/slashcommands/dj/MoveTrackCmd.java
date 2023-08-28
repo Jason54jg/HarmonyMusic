@@ -1,6 +1,5 @@
 package dev.jason.harmony.slashcommands.dj;
 
-
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.jason.harmony.Bot;
@@ -30,9 +29,9 @@ public class MoveTrackCmd extends DJCommand {
         options.add(new OptionData(OptionType.INTEGER, "de", "la position actuelle dans la file d'attente", true));
         options.add(new OptionData(OptionType.INTEGER, "à", "la nouvelle position dans la file d'attente", true));
         this.options = options;
-
     }
 
+    // Méthode pour vérifier si une position dans la file d'attente est invalide
     private static boolean isUnavailablePosition(FairQueue<QueuedTrack> queue, int position) {
         return (position < 1 || position > queue.size());
     }
@@ -45,25 +44,25 @@ public class MoveTrackCmd extends DJCommand {
 
         String[] parts = event.getArgs().split("\\s+", 2);
         if (parts.length < 2) {
-            event.replyError("Contenir deux chiffres valides.");
+            event.replyError("Fournissez deux positions valides.");
             return;
         }
 
         try {
-            // Validate the args
+            // Valider les arguments
             from = Integer.parseInt(parts[0]);
             to = Integer.parseInt(parts[1]);
         } catch (NumberFormatException e) {
-            event.replyError("Contenir deux chiffres valides.");
+            event.replyError("Fournissez deux positions valides.");
             return;
         }
 
         if (from == to) {
-            event.replyError("Impossible de déplacer une piste à la même position.");
+            event.replyError("Impossible de déplacer une piste vers la même position.");
             return;
         }
 
-        // Validate that from and to are available
+        // Valider que "de" et "à" sont disponibles
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         FairQueue<QueuedTrack> queue = handler.getQueue();
         if (isUnavailablePosition(queue, from)) {
@@ -77,7 +76,7 @@ public class MoveTrackCmd extends DJCommand {
             return;
         }
 
-        // Move the track
+        // Déplacer la piste
         QueuedTrack track = queue.moveItem(from - 1, to - 1);
         String trackTitle = track.getTrack().getInfo().title;
         String reply = String.format("Déplacé **%s** de la position `%d` à `%d`.", trackTitle, from, to);
@@ -98,11 +97,11 @@ public class MoveTrackCmd extends DJCommand {
         to = Integer.parseInt(event.getOption("à").getAsString());
 
         if (from == to) {
-            event.reply(event.getClient().getError() + "Vous ne pouvez pas vous déplacer à la même position.").queue();
+            event.reply(event.getClient().getError() + "Vous ne pouvez pas déplacer vers la même position.").queue();
             return;
         }
 
-        // Validate that from and to are available
+        // Valider que "de" et "à" sont disponibles
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         FairQueue<QueuedTrack> queue = handler.getQueue();
         if (isUnavailablePosition(queue, from)) {
@@ -116,7 +115,7 @@ public class MoveTrackCmd extends DJCommand {
             return;
         }
 
-        // Move the track
+        // Déplacer la piste
         QueuedTrack track = queue.moveItem(from - 1, to - 1);
         String trackTitle = track.getTrack().getInfo().title;
         String reply = String.format("Déplacé **%s** de la position `%d` à `%d`.", trackTitle, from, to);

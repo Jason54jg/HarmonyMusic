@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetdjCmd extends AdminCommand {
-    public SetdjCmd(Bot bot) {
-        this.name = "setdj";
+public class CmdDéfinirDJ extends AdminCommand {
+    public CmdDéfinirDJ(Bot bot) {
+        this.name = "definirdj";
         this.help = "Définir le rôle DJ qui peut utiliser les commandes du bot.";
         this.arguments = "<rôle|aucun>";
         this.aliases = bot.getConfig().getAliases(this.name);

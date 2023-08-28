@@ -9,13 +9,10 @@ import com.jason.harmony.settings.Settings;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.text.ParseException;
 
 public abstract class MusicCommand extends SlashCommand {
     protected final Bot bot;
@@ -26,7 +23,7 @@ public abstract class MusicCommand extends SlashCommand {
     public MusicCommand(Bot bot) {
         this.bot = bot;
         this.guildOnly = true;
-        this.category = new Category("Music");
+        this.category = new Category("Musique");
     }
 
     @Override
@@ -36,25 +33,25 @@ public abstract class MusicCommand extends SlashCommand {
         TextChannel channel = settings.getTextChannel(event.getGuild());
         bot.getPlayerManager().setUpHandler(event.getGuild());
         if (bePlaying && !((AudioHandler) event.getGuild().getAudioManager().getSendingHandler()).isMusicPlaying(event.getJDA())) {
-            event.reply(event.getClient().getError() + "Vous devez jouer pour utiliser les commandes.").queue();
+            event.reply(event.getClient().getError() + "Vous devez être en train de jouer pour utiliser les commandes.").queue();
             return;
         }
         if (beListening) {
-            AudioChannelUnion current = event.getGuild().getSelfMember().getVoiceState().getChannel();
+            AudioChannel current = event.getGuild().getSelfMember().getVoiceState().getChannel();
 
             if (current == null)
-                current = (AudioChannelUnion) settings.getVoiceChannel(event.getGuild());
+                current = settings.getVoiceChannel(event.getGuild());
             GuildVoiceState userState = event.getMember().getVoiceState();
 
             if (!userState.inAudioChannel() || userState.isDeafened() || (current != null && !userState.getChannel().equals(current))) {
-                event.reply(event.getClient().getError() + String.format("Vous devez être en %s pour utiliser cette commande !", (current == null ? "audio channel" : "**" + current.getAsMention() + "**"))).queue();
+                event.reply(event.getClient().getError() + String.format("Vous devez être dans %s pour utiliser cette commande !", (current == null ? "un canal audio" : "**" + current.getName() + "**"))).queue();
                 return;
             }
             if (!event.getGuild().getSelfMember().getVoiceState().inAudioChannel()) {
                 try {
                     event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
                 } catch (PermissionException ex) {
-                    event.reply(event.getClient().getError() + String.format("Impossible de se connecter à **%s**!", userState.getChannel().getAsMention())).queue();
+                    event.reply(event.getClient().getError() + String.format("Impossible de se connecter à **%s** !", userState.getChannel().getName())).queue();
                     return;
                 }
                 if (userState.getChannel().getType() == ChannelType.STAGE) {
@@ -75,30 +72,30 @@ public abstract class MusicCommand extends SlashCommand {
                 event.getMessage().delete().queue();
             } catch (PermissionException ignore) {
             }
-            event.replyInDm(event.getClient().getError() + String.format("les commandes ne peuvent être exécutées que sur %s", channel.getAsMention()));
+            event.replyInDm(event.getClient().getError() + String.format("Les commandes ne peuvent être exécutées que sur %s.", channel.getAsMention()));
             return;
         }
-        bot.getPlayerManager().setUpHandler(event.getGuild()); // no point constantly checking for this later
+        bot.getPlayerManager().setUpHandler(event.getGuild()); // inutile de vérifier constamment cela par la suite
 
         if (bePlaying && !((AudioHandler) event.getGuild().getAudioManager().getSendingHandler()).isMusicPlaying(event.getJDA())) {
-            event.reply(event.getClient().getError() + "doit être en train de jouer pour utiliser les commandes.");
+            event.reply(event.getClient().getError() + "La musique doit être en train de jouer pour utiliser les commandes.");
             return;
         }
         if (beListening) {
-            AudioChannelUnion current = event.getGuild().getSelfMember().getVoiceState().getChannel();
+            AudioChannel current = event.getGuild().getSelfMember().getVoiceState().getChannel();
 
             if (current == null)
-                current = (AudioChannelUnion) settings.getVoiceChannel(event.getGuild());
+                current = settings.getVoiceChannel(event.getGuild());
             GuildVoiceState userState = event.getMember().getVoiceState();
             if (!userState.inAudioChannel() || userState.isDeafened() || (current != null && !userState.getChannel().equals(current))) {
-                event.replyError(String.format("Vous devez être dans %s pour utiliser cette commande! ", (current == null ? "canal audio" : "**" + current.getName() + "**")));
+                event.replyError(String.format("Vous devez être dans %s pour utiliser cette commande !", (current == null ? "un canal audio" : "**" + current.getName() + "**")));
                 return;
             }
             if (!event.getGuild().getSelfMember().getVoiceState().inAudioChannel()) {
                 try {
                     event.getGuild().getAudioManager().openAudioConnection(userState.getChannel());
                 } catch (PermissionException ex) {
-                    event.reply(event.getClient().getError() + String.format("Impossible de se connecter à **%s**!", userState.getChannel().getName()));
+                    event.reply(event.getClient().getError() + String.format("Impossible de se connecter à **%s** !", userState.getChannel().getName()));
                     return;
                 }
                 if (userState.getChannel().getType() == ChannelType.STAGE) {

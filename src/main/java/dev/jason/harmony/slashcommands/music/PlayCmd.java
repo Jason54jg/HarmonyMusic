@@ -49,7 +49,7 @@ public class PlayCmd extends MusicCommand {
         super(bot);
         this.loadingEmoji = bot.getConfig().getLoading();
         this.name = "play";
-        this.arguments = "<title|URL|subcommand>";
+        this.arguments = "<titre|URL|sous-commande>";
         this.help = "jouer la chanson spécifiée";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.beListening = true;
@@ -81,17 +81,17 @@ public class PlayCmd extends MusicCommand {
 
                 AtomicInteger count = new AtomicInteger();
                 CacheLoader.CacheResult cache = bot.getCacheLoader().ConvertCache(data);
-                event.getChannel().sendMessage(":calling: Chargement des fichiers de cache... (" + cache.getItems().size() + "chansons)").queue(m -> {
+                event.getChannel().sendMessage(":calling: Chargement des fichiers de cache... (" + cache.getItems().size() + " chansons)").queue(m -> {
                     cache.loadTracks(bot.getPlayerManager(), (at) -> {
                         handler.addTrack(new QueuedTrack(at, (User) User.fromId(data.get(count.get()).getUserId())));
                         count.getAndIncrement();
                     }, () -> {
                         StringBuilder builder = new StringBuilder(cache.getTracks().isEmpty()
                                 ? event.getClient().getWarning() + " Aucune chanson chargée."
-                                : event.getClient().getSuccess() + " Loaded " + "**" + cache.getTracks().size() + "** chansons du fichier cache.");
+                                : event.getClient().getSuccess() + " Chargé " + "**" + cache.getTracks().size() + "** chansons depuis le fichier cache.");
                         if (!cache.getErrors().isEmpty())
-                            builder.append("\nLes chansons suivantes n'ont pas pu être chargées:");
-                        cache.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                            builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
+                        cache.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                         String str = builder.toString();
                         if (str.length() > 2000)
                             str = str.substring(0, 1994) + " (Omis ci-dessous)";
@@ -106,6 +106,7 @@ public class PlayCmd extends MusicCommand {
                 return;
             }
 
+
             if (handler.playFromDefault()) {
                 Settings settings = event.getClient().getSettingsFor(event.getGuild());
                 handler.stopAndClear();
@@ -114,16 +115,14 @@ public class PlayCmd extends MusicCommand {
                     event.replyError("Impossible de trouver `" + event.getArgs() + ".txt` dans le dossier de la liste de lecture.");
                     return;
                 }
-                event.getChannel().sendMessage(loadingEmoji + " Chargement de la playlist **" + settings.getDefaultPlaylist() + " ** ...( " + playlist.getItems().size() + "chansons)").queue(m ->
-                {
-
+                event.getChannel().sendMessage(loadingEmoji + " Chargement de la playlist **" + settings.getDefaultPlaylist() + " ** ... (" + playlist.getItems().size() + " chansons)").queue(m -> {
                     playlist.loadTracks(bot.getPlayerManager(), (at) -> handler.addTrack(new QueuedTrack(at, event.getAuthor())), () -> {
                         StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty()
-                                ? event.getClient().getWarning() + "Aucune chanson chargée!"
-                                : event.getClient().getSuccess() + " ** " + playlist.getTracks().size() + " **Chanson chargée!");
+                                ? event.getClient().getWarning() + " Aucune chanson chargée !"
+                                : event.getClient().getSuccess() + " ** " + playlist.getTracks().size() + " ** Chanson chargée !");
                         if (!playlist.getErrors().isEmpty())
-                            builder.append("\nÉchec du chargement des chansons suivantes:");
-                        playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                            builder.append("\nÉchec du chargement des chansons suivantes :");
+                        playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                         String str = builder.toString();
                         if (str.length() > 2000)
                             str = str.substring(0, 1994) + " (...)";
@@ -131,12 +130,11 @@ public class PlayCmd extends MusicCommand {
                     });
                 });
                 return;
-
             }
 
-            StringBuilder builder = new StringBuilder(event.getClient().getWarning() + "Lire la commande:\n");
-            builder.append("\n`").append(event.getClient().getPrefix()).append(name).append("<nom de la chanson>` - Lire le premier résultat de YouTube");
-            builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" <URL>` - Lit la chanson, la liste de lecture ou le flux spécifié");
+            StringBuilder builder = new StringBuilder(event.getClient().getWarning() + "Commande de lecture :\n");
+            builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" <nom de la chanson>` - Lire le premier résultat de YouTube");
+            builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" <URL>` - Lire la chanson, la liste de lecture ou le flux spécifié");
             for (Command cmd : children)
                 builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" ").append(cmd.getName()).append(" ").append(cmd.getArguments()).append("` - ").append(cmd.getHelp());
             event.reply(builder.toString());
@@ -166,17 +164,17 @@ public class PlayCmd extends MusicCommand {
         private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
             if (bot.getConfig().isTooLong(track)) {
                 m.editMessage(FormatUtil.filter(event.getClient().getWarning() +
-                        " **" + track.getInfo().title + "**`(" + FormatUtil.formatTime(track.getDuration()) + ")` est la longueur configurée `(" + FormatUtil.formatTime(bot.getConfig().getMaxSeconds() * 1000) + ") ` est dépassé.")).queue();
+                        " **" + track.getInfo().title + "** (`" + FormatUtil.formatTime(track.getDuration()) + "`) dépasse la durée configurée de `" + FormatUtil.formatTime(bot.getConfig().getMaxSeconds() * 1000) + "`")).queue();
                 return;
             }
             AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
             int pos = handler.addTrack(new QueuedTrack(track, event.getAuthor())) + 1;
 
-            // Output MSG ex:
-            // Ajout de <titre><(longueur)>.
-            // Ajout de <Titre><(Longueur)> à la <numéro de lecture>ième file d'attente.
+            // Exemple de message de sortie :
+            // Ajout de <titre> (<longueur>).
+            // Ajout de <Titre> (<Longueur>) à la <numéro de lecture>ième file d'attente.
             String addMsg = FormatUtil.filter(event.getClient().getSuccess() + " **" + track.getInfo().title
-                    + "** (`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "Ajouté.": "En attente de lecture" + pos + "Ajoutée."));
+                    + "** (`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "Ajouté." : "En attente de lecture " + pos + "Ajoutée."));
             if (playlist == null || !event.getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_ADD_REACTION))
                 m.editMessage(addMsg).queue();
             else {
@@ -185,14 +183,12 @@ public class PlayCmd extends MusicCommand {
                         .setChoices(LOAD, CANCEL)
                         .setEventWaiter(bot.getWaiter())
                         .setTimeout(30, TimeUnit.SECONDS)
-                        .setAction(re ->
-                        {
+                        .setAction(re -> {
                             if (re.getName().equals(LOAD))
-                                m.editMessage(addMsg + "\n" + event.getClient().getSuccess() + "**" + loadPlaylist(playlist, track) + "**Chanson ajoutée à la file d'attente!").queue();
+                                m.editMessage(addMsg + "\n" + event.getClient().getSuccess() + "**" + loadPlaylist(playlist, track) + "** Chanson ajoutée à la file d'attente !").queue();
                             else
                                 m.editMessage(addMsg).queue();
-                        }).setFinalAction(m ->
-                        {
+                        }).setFinalAction(m -> {
                             try {
                                 m.clearReactions().queue();
                             } catch (PermissionException ignore) {
@@ -229,14 +225,14 @@ public class PlayCmd extends MusicCommand {
             } else {
                 int count = loadPlaylist(playlist, null);
                 if (count == 0) {
-                    m.editMessage(FormatUtil.filter(event.getClient().getWarning() + "dans cette playlist" + (playlist.getName() == null? "": "(**" + playlist.getName()
-                            + "**) ") + " est plus long que la longueur maximale autorisée.(`" + bot.getConfig().getMaxTime() + "`)")).queue();
+                    m.editMessage(FormatUtil.filter(event.getClient().getWarning() + " Dans cette playlist" + (playlist.getName() == null ? "" : "(**" + playlist.getName()
+                            + "**) ") + "est plus long que la longueur maximale autorisée (`" + bot.getConfig().getMaxTime() + "`)")).queue();
                 } else {
                     m.editMessage(FormatUtil.filter(event.getClient().getSuccess()
-                            + (playlist.getName() == null ? "playlist" : "playlist **" + playlist.getName() + "**") + "`"
-                            + playlist.getTracks().size() + "` La chanson a été mise en file d'attente."
+                            + (playlist.getName() == null ? "Playlist" : "Playlist **" + playlist.getName() + "**") + "`"
+                            + playlist.getTracks().size() + "` La chanson a été ajoutée à la file d'attente."
                             + (count < playlist.getTracks().size() ? "\n" + event.getClient().getWarning() + " Piste plus longue que la longueur maximale autorisée (`"
-                            + bot.getConfig().getMaxTime() + "`) omis.": ""))).queue();
+                            + bot.getConfig().getMaxTime() + "`) omise." : ""))).queue();
                 }
             }
         }
@@ -244,7 +240,7 @@ public class PlayCmd extends MusicCommand {
         @Override
         public void noMatches() {
             if (ytsearch)
-                m.editMessage(FormatUtil.filter(event.getClient().getWarning() + " aucun résultat de recherche pour `" + event.getArgs() + "`.")).queue();
+                m.editMessage(FormatUtil.filter(event.getClient().getWarning() + " Aucun résultat de recherche pour `" + event.getArgs() + "`.")).queue();
             else
                 bot.getPlayerManager().loadItemOrdered(event.getGuild(), "ytsearch:" + event.getArgs(), new ResultHandler(m, event, true));
         }
@@ -255,13 +251,13 @@ public class PlayCmd extends MusicCommand {
                 m.editMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement : " + throwable.getMessage()).queue();
             } else {
                 if (m.getAuthor().getIdLong() == bot.getConfig().getOwnerId() || m.getMember().isOwner()) {
-                    m.editMessage(event.getClient().getError() + "Une erreur s'est produite lors du chargement de la chanson.\n" +
-                            "**Contenu de l'erreur: " + throwable.getLocalizedMessage() + "**").queue();
+                    m.editMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement de la chanson.\n" +
+                            "**Contenu de l'erreur : " + throwable.getLocalizedMessage() + "**").queue();
                     StackTraceUtil.sendStackTrace(event.getTextChannel(), throwable);
                     return;
                 }
 
-                m.editMessage(event.getClient().getError() + "Une erreur s'est produite lors du chargement de la chanson.").queue();
+                m.editMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement de la chanson.").queue();
             }
         }
     }
@@ -277,8 +273,8 @@ public class PlayCmd extends MusicCommand {
             super(bot);
             this.jda = bot.getJDA();
             this.loadingEmoji = bot.getConfig().getLoading();
-            this.name = "ajout";
-            this.arguments = "<title|URL>";
+            this.name = "demande";
+            this.arguments = "<titre|URL>";
             this.help = "demander une chanson";
             this.aliases = bot.getConfig().getAliases(this.name);
             this.beListening = true;
@@ -287,8 +283,8 @@ public class PlayCmd extends MusicCommand {
             List<OptionData> options = new ArrayList<>();
             options.add(new OptionData(OptionType.STRING, "input", "URL ou nom de la chanson", false));
             this.options = options;
-
         }
+
 
         @Override
         public void doCommand(CommandEvent event) {
@@ -303,7 +299,7 @@ public class PlayCmd extends MusicCommand {
                     if (DJCommand.checkDJPermission(event.getClient(), event)) {
 
                         handler.getPlayer().setPaused(false);
-                        event.reply(event.getClient().getSuccess() + "**" + handler.getPlayer().getPlayingTrack().getInfo().title + "Reprise de la lecture **.").queue();
+                        event.reply(event.getClient().getSuccess() + "**" + handler.getPlayer().getPlayingTrack().getInfo().title + " Reprise de la lecture **.").queue();
 
                         Bot.updatePlayStatus(event.getGuild(), event.getGuild().getSelfMember(), PlayStatus.PLAYING);
                     } else
@@ -317,18 +313,18 @@ public class PlayCmd extends MusicCommand {
 
                     AtomicInteger count = new AtomicInteger();
                     CacheLoader.CacheResult cache = bot.getCacheLoader().ConvertCache(data);
-                    event.reply(":calling: Chargement des fichiers de cache... (" + cache.getItems().size() + "chansons)").queue(m -> {
+                    event.reply(":calling: Chargement des fichiers de cache... (" + cache.getItems().size() + " chansons)").queue(m -> {
                         cache.loadTracks(bot.getPlayerManager(), (at) -> {
                             // TODO: Utiliser un ID utilisateur mis en cache.
                             handler.addTrack(new QueuedTrack(at, event.getUser()));
                             count.getAndIncrement();
                         }, () -> {
                             StringBuilder builder = new StringBuilder(cache.getTracks().isEmpty()
-                                    ? event.getClient().getWarning() + "La chanson n'est pas chargée."
-                                    : event.getClient().getSuccess() + " du fichier cache," + "**" + cache.getTracks().size() + "**morceau chargé.");
+                                    ? event.getClient().getWarning() + " La chanson n'est pas chargée."
+                                    : event.getClient().getSuccess() + " du fichier cache, " + "**" + cache.getTracks().size() + "** morceau chargé.");
                             if (!cache.getErrors().isEmpty())
-                                builder.append("\nLes chansons suivantes n'ont pas pu être chargées:");
-                            cache.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                                builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
+                            cache.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                             String str = builder.toString();
                             if (str.length() > 2000)
                                 str = str.substring(0, 1994) + " (Omis ci-dessous)";
@@ -351,16 +347,16 @@ public class PlayCmd extends MusicCommand {
                         event.reply("Impossible de trouver `" + event.getOption("input").getAsString() + ".txt` dans le dossier de la liste de lecture.").queue();
                         return;
                     }
-                    event.reply(loadingEmoji + " Chargement de la playlist **" + settings.getDefaultPlaylist() + " ** ...( " + playlist.getItems().size() + "chansons)").queue(m ->
+                    event.reply(loadingEmoji + " Chargement de la playlist **" + settings.getDefaultPlaylist() + " ** ...( " + playlist.getItems().size() + " chansons)").queue(m ->
                     {
 
                         playlist.loadTracks(bot.getPlayerManager(), (at) -> handler.addTrack(new QueuedTrack(at, event.getUser())), () -> {
                             StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty()
-                                    ? event.getClient().getWarning() + "Aucune chanson chargée !"
-                                    : event.getClient().getSuccess() + " ** " + playlist.getTracks().size() + " **Chanson chargée!");
+                                    ? event.getClient().getWarning() + " Aucune chanson chargée !"
+                                    : event.getClient().getSuccess() + " ** " + playlist.getTracks().size() + " ** Chanson chargée !");
                             if (!playlist.getErrors().isEmpty())
-                                builder.append("\nÉchec du chargement de la chanson suivante:");
-                            playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                                builder.append("\nÉchec du chargement de la chanson suivante :");
+                            playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                             String str = builder.toString();
                             if (str.length() > 2000)
                                 str = str.substring(0, 1994) + " (...)";
@@ -368,18 +364,18 @@ public class PlayCmd extends MusicCommand {
                         });
                     });
                     return;
-
                 }
 
-                StringBuilder builder = new StringBuilder(event.getClient().getWarning() + " Play commandE:\n");
-                builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" <nom de la chanson>` - Lire le premier résultat de YouTube");
-                builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" <URL>` - Lit la chanson, la liste de lecture ou le flux spécifié.");
+                StringBuilder builder = new StringBuilder(event.getClient().getWarning() + " Commande de lecture :\n");
+                builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" <nom de la chanson>` - Joue le premier résultat de YouTube.");
+                builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" <URL>` - Joue la chanson, la liste de lecture ou le flux spécifié.");
                 for (Command cmd : children)
                     builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" ").append(cmd.getName()).append(" ").append(cmd.getArguments()).append("` - ").append(cmd.getHelp());
                 event.reply(builder.toString()).queue();
                 return;
+
             }
-            event.reply(loadingEmoji + "`[" + event.getOption("input").getAsString() + "Chargement ]`...").queue(m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), event.getOption("input").getAsString(), new SlashResultHandler(m, event, false)));
+            event.reply(loadingEmoji + "`[" + event.getOption("input").getAsString() + " Chargement ]`...").queue(m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), event.getOption("input").getAsString(), new SlashResultHandler(m, event, false)));
         }
 
         public class SlashResultHandler implements AudioLoadResultHandler {
@@ -396,17 +392,17 @@ public class PlayCmd extends MusicCommand {
             private void loadSingle(AudioTrack track, AudioPlaylist playlist) {
                 if (bot.getConfig().isTooLong(track)) {
                     m.editOriginal(FormatUtil.filter(event.getClient().getWarning() +
-                            " **" + track.getInfo().title + "**`(" + FormatUtil.formatTime(track.getDuration()) + ")` est la longueur configurée `(" + FormatUtil.formatTime(bot.getConfig().getMaxSeconds() * 1000) + ") ` est dépassé.")).queue();
+                            " **" + track.getInfo().title + "**`(" + FormatUtil.formatTime(track.getDuration()) + ")` dépasse la durée configurée `(" + FormatUtil.formatTime(bot.getConfig().getMaxSeconds() * 1000) + ")`.")).queue();
                     return;
                 }
                 AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                 int pos = handler.addTrack(new QueuedTrack(track, event.getUser())) + 1;
 
-                // Output MSG ex:
-                // <タイトル><(長さ)> を追加しました。
-                // <タイトル><(長さ)> を再生待ちの<再生待ち番号>番目に追加しました。
+                // Message de sortie ex:
+                // Ajout de <titre><(durée)>.
+                // Ajout de <titre><(durée)> à la file d'attente de lecture <numéro d'attente>.
                 String addMsg = FormatUtil.filter(client.getSuccess() + " **" + track.getInfo().title
-                        + "** (`" + FormatUtil.formatTime(track.getDuration()) + "Ajout de `) " + (pos == 0? ". Ajout de ":" à " + pos + " en attente de lecture."));
+                        + "** (`" + FormatUtil.formatTime(track.getDuration()) + "`) Ajout de " + pos + "Musique en attente de lecture.");
                 if (playlist == null || !event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_ADD_REACTION)) {
                     m.editOriginal(addMsg).queue();
                 } else {
@@ -418,7 +414,7 @@ public class PlayCmd extends MusicCommand {
                             .setAction(re ->
                             {
                                 if (re.getName().equals(LOAD))
-                                    m.editOriginal(addMsg + "\n" + event.getClient().getSuccess() + "**" + loadPlaylist(playlist, track) + "**Chanson ajoutée à la file d'attente!").queue();
+                                    m.editOriginal(addMsg + "\n" + event.getClient().getSuccess() + "**" + loadPlaylist(playlist, track) + "** Chanson ajoutée à la file d'attente!").queue();
                                 else
                                     m.editOriginal(addMsg).queue();
                             }).setFinalAction(m ->
@@ -460,14 +456,14 @@ public class PlayCmd extends MusicCommand {
                 } else {
                     int count = loadPlaylist(playlist, null);
                     if (count == 0) {
-                        m.editOriginal(FormatUtil.filter(event.getClient().getWarning() + " dans cette playlist" + (playlist.getName() == null ? "" : "(**" + playlist.getName()
-                                + "**) ") + " est plus long que la longueur maximale autorisée.(`" + bot.getConfig().getMaxTime() + "`)")).queue();
+                        m.editOriginal(FormatUtil.filter(event.getClient().getWarning() + " Dans cette playlist" + (playlist.getName() == null ? "" : "(**" + playlist.getName()
+                                + "**) ") + "est plus longue que la durée maximale autorisée (`" + bot.getConfig().getMaxTime() + "`).")).queue();
                     } else {
                         m.editOriginal(FormatUtil.filter(event.getClient().getSuccess()
-                                + (playlist.getName() == null ? "playlist" : "playlist **" + playlist.getName() + "**") + "`"
-                                + playlist.getTracks().size() + "` La chanson a été mise en file d'attente."
-                                + (count < playlist.getTracks().size() ? "\n" + event.getClient().getWarning() + " Piste plus longue que la longueur maximale autorisée (`"
-                                + bot.getConfig().getMaxTime() + "`) omis.": ""))).queue();
+                                + (playlist.getName() == null ? "Playlist" : "Playlist **" + playlist.getName() + "**") + "`"
+                                + playlist.getTracks().size() + "` La chanson a été ajoutée à la file d'attente."
+                                + (count < playlist.getTracks().size() ? "\n" + event.getClient().getWarning() + " Piste plus longue que la durée maximale autorisée (`"
+                                + bot.getConfig().getMaxTime() + "`) omise.": ""))).queue();
                     }
                 }
             }
@@ -475,7 +471,7 @@ public class PlayCmd extends MusicCommand {
             @Override
             public void noMatches() {
                 if (ytsearch)
-                    m.editOriginal(FormatUtil.filter(event.getClient().getWarning() + " aucun résultat de recherche pour `" + event.getOption("input").getAsString() + "`.")).queue();
+                    m.editOriginal(FormatUtil.filter(event.getClient().getWarning() + " Aucun résultat de recherche pour `" + event.getOption("input").getAsString() + "`.")).queue();
                 else
                     bot.getPlayerManager().loadItemOrdered(event.getGuild(), "ytsearch:" + event.getOption("input").getAsString(), new SlashResultHandler(m, event, true));
             }
@@ -483,10 +479,9 @@ public class PlayCmd extends MusicCommand {
             @Override
             public void loadFailed(FriendlyException throwable) {
                 if (throwable.severity == Severity.COMMON) {
-                    m.editOriginal(event.getClient().getError() + " Une erreur s'est produite lors du chargement : " + throwable.getMessage()).queue();
+                    m.editOriginal(event.getClient().getError() + " Une erreur est survenue lors du chargement : " + throwable.getMessage()).queue();
                 } else {
-
-                    m.editOriginal(event.getClient().getError() + "Une erreur s'est produite lors du chargement de la chanson.").queue();
+                    m.editOriginal(event.getClient().getError() + " Une erreur est survenue lors du chargement de la chanson.").queue();
                 }
             }
         }
@@ -498,13 +493,13 @@ public class PlayCmd extends MusicCommand {
             super(bot);
             this.name = "playlist";
             this.aliases = new String[]{"pl"};
-            this.arguments = "<name>";
-            this.help = "jouer la liste de lecture fournie";
+            this.arguments = "<nom>";
+            this.help = "joue la liste de lecture fournie";
             this.beListening = true;
             this.bePlaying = false;
 
             List<OptionData> options = new ArrayList<>();
-            options.add(new OptionData(OptionType.STRING, "name", "nom de la liste de lecture", true));
+            options.add(new OptionData(OptionType.STRING, "nom", "nom de la liste de lecture", true));
             this.options = options;
         }
 
@@ -512,27 +507,26 @@ public class PlayCmd extends MusicCommand {
         public void doCommand(CommandEvent event) {
             String guildId = event.getGuild().getId();
             if (event.getArgs().isEmpty()) {
-                event.reply(event.getClient().getError() + "Inclure le nom de la liste de lecture.");
+                event.reply(event.getClient().getError() + "Veuillez inclure le nom de la liste de lecture.");
                 return;
             }
             Playlist playlist = bot.getPlaylistLoader().getPlaylist(guildId, event.getArgs());
             if (playlist == null) {
-                event.replyError("Impossible de trouver `" + event.getArgs() + ".txt`");
+                event.replyError("Impossible de trouver le fichier `" + event.getArgs() + ".txt`");
                 return;
             }
-            event.getChannel().sendMessage(":calling: playlist **" + event.getArgs() + "Chargement **... (" + playlist.getItems().size() + " chansons)").queue(m ->
-            {
+            event.getChannel().sendMessage(":calling: Chargement de la playlist **" + event.getArgs() + "**... (" + playlist.getItems().size() + " chansons)").queue(m -> {
                 AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                 playlist.loadTracks(bot.getPlayerManager(), (at) -> handler.addTrack(new QueuedTrack(at, event.getAuthor())), () -> {
                     StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty()
-                            ? event.getClient().getWarning() + "La chanson n'est pas chargée."
-                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "**Chanson chargée.");
+                            ? event.getClient().getWarning() + "Aucune chanson chargée."
+                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "** chanson(s) chargée(s).");
                     if (!playlist.getErrors().isEmpty())
-                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
-                    playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
+                    playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                     String str = builder.toString();
                     if (str.length() > 2000)
-                        str = str.substring(0, 1994) + " (Omis ci-dessous)";
+                        str = str.substring(0, 1994) + " (Suite omise)";
                     m.editMessage(FormatUtil.filter(str)).queue();
                 });
             });
@@ -546,22 +540,21 @@ public class PlayCmd extends MusicCommand {
 
             Playlist playlist = bot.getPlaylistLoader().getPlaylist(guildId, name);
             if (playlist == null) {
-                event.reply(event.getClient().getError() + "Impossible de trouver `" + name + ".txt`").queue();
+                event.reply(event.getClient().getError() + "Impossible de trouver le fichier `" + name + ".txt`").queue();
                 return;
             }
-            event.reply(":calling: playlist **" + name + "Chargement **... (" + playlist.getItems().size() + " chansons)").queue(m ->
-            {
+            event.reply(":calling: Chargement de la playlist **" + name + "**... (" + playlist.getItems().size() + " chansons)").queue(m -> {
                 AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                 playlist.loadTracks(bot.getPlayerManager(), (at) -> handler.addTrack(new QueuedTrack(at, event.getUser())), () -> {
                     StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty()
-                            ? event.getClient().getWarning() + "La chanson n'est pas chargée."
-                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "**Chanson chargée.");
+                            ? event.getClient().getWarning() + "Aucune chanson chargée."
+                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "** chanson(s) chargée(s).");
                     if (!playlist.getErrors().isEmpty())
-                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées:");
-                    playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
+                    playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1).append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                     String str = builder.toString();
                     if (str.length() > 2000)
-                        str = str.substring(0, 1994) + " (Omis ci-dessous)";
+                        str = str.substring(0, 1994) + " (Suite omise)";
                     m.editOriginal(FormatUtil.filter(str)).queue();
                 });
             });
@@ -573,7 +566,7 @@ public class PlayCmd extends MusicCommand {
             super(bot);
             this.name = "mylist";
             this.aliases = new String[]{"ml"};
-            this.arguments = "<name>";
+            this.arguments = "<nom>";
             this.help = "jouer ma liste";
             this.beListening = true;
             this.bePlaying = false;
@@ -587,28 +580,28 @@ public class PlayCmd extends MusicCommand {
         public void doCommand(CommandEvent event) {
             String userId = event.getAuthor().getId();
             if (event.getArgs().isEmpty()) {
-                event.reply(event.getClient().getError() + " Veuillez inclure le nom de ma liste。");
+                event.reply(event.getClient().getError() + " Veuillez inclure le nom de ma liste.");
                 return;
             }
             MylistLoader.Playlist playlist = bot.getMylistLoader().getPlaylist(userId, event.getArgs());
             if (playlist == null) {
-                event.replyError("Impossible de trouver `" + event.getArgs() + ".txt `");
+                event.replyError("Impossible de trouver le fichier `" + event.getArgs() + ".txt `");
                 return;
             }
-            event.getChannel().sendMessage(":calling: mylist**" + event.getArgs() + "Loading **... (" + playlist.getItems().size() + " chansons)").queue(m ->
+            event.getChannel().sendMessage(":calling: Ma liste **" + event.getArgs() + "** Chargement en cours... (" + playlist.getItems().size() + " chansons)").queue(m ->
             {
                 AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                 playlist.loadTracks(bot.getPlayerManager(), (at) -> handler.addTrack(new QueuedTrack(at, event.getAuthor())), () -> {
                     StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty()
                             ? event.getClient().getWarning() + " Aucune chanson chargée."
-                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "**Chanson chargée.");
+                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "** Chanson(s) chargée(s).");
                     if (!playlist.getErrors().isEmpty())
-                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées:");
+                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
                     playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1)
-                            .append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                            .append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                     String str = builder.toString();
                     if (str.length() > 2000)
-                        str = str.substring(0, 1994) + " (Omis ci-dessous)";
+                        str = str.substring(0, 1994) + " (Suite omise)";
                     m.editMessage(FormatUtil.filter(str)).queue();
                 });
             });
@@ -622,23 +615,23 @@ public class PlayCmd extends MusicCommand {
 
             MylistLoader.Playlist playlist = bot.getMylistLoader().getPlaylist(userId, name);
             if (playlist == null) {
-                event.reply(event.getClient().getError() + "Impossible de trouver `" + name + ".txt").queue();
+                event.reply(event.getClient().getError() + "Impossible de trouver le fichier `" + name + ".txt").queue();
                 return;
             }
-            event.reply(":calling: list**" + name + "Loading **... (" + playlist.getItems().size() + " chansons)").queue(m ->
+            event.reply(":calling: Ma liste **" + name + "** Chargement en cours... (" + playlist.getItems().size() + " chansons)").queue(m ->
             {
                 AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                 playlist.loadTracks(bot.getPlayerManager(), (at) -> handler.addTrack(new QueuedTrack(at, event.getUser())), () -> {
                     StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty()
                             ? event.getClient().getWarning() + " Aucune chanson chargée."
-                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "**Chanson chargée.");
+                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "** Chanson(s) chargée(s).");
                     if (!playlist.getErrors().isEmpty())
-                        builder.append("\n以下の楽曲をロードできませんでした:");
+                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
                     playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1)
-                            .append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                            .append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                     String str = builder.toString();
                     if (str.length() > 2000)
-                        str = str.substring(0, 1994) + " (以下略)";
+                        str = str.substring(0, 1994) + " (Suite omise)";
                     m.editOriginal(FormatUtil.filter(str)).queue();
                 });
             });
@@ -650,7 +643,7 @@ public class PlayCmd extends MusicCommand {
             super(bot);
             this.name = "publist";
             this.aliases = new String[]{"pul"};
-            this.arguments = "<name>";
+            this.arguments = "<nom>";
             this.help = "Lire la liste publique";
             this.beListening = true;
             this.bePlaying = false;
@@ -663,28 +656,27 @@ public class PlayCmd extends MusicCommand {
         @Override
         public void doCommand(CommandEvent event) {
             if (event.getArgs().isEmpty()) {
-                event.reply(event.getClient().getError() + " Inclure le nom de la liste de lecture.");
+                event.reply(event.getClient().getError() + " Veuillez inclure le nom de la liste de lecture.");
                 return;
             }
             PubliclistLoader.Playlist playlist = bot.getPublistLoader().getPlaylist(event.getArgs());
             if (playlist == null) {
-                event.replyError("Impossible de trouver `" + event.getArgs() + ".txt `");
+                event.replyError("Impossible de trouver le fichier `" + event.getArgs() + ".txt `");
                 return;
             }
-            event.getChannel().sendMessage(":calling: playlist**" + event.getArgs() + "Chargement **... (" + playlist.getItems().size() + " chansons)").queue(m ->
-            {
+            event.getChannel().sendMessage(":calling: Playlist **" + event.getArgs() + "** Chargement en cours... (" + playlist.getItems().size() + " chansons)").queue(m -> {
                 AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                 playlist.loadTracks(bot.getPlayerManager(), (at) -> handler.addTrack(new QueuedTrack(at, event.getAuthor())), () -> {
                     StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty()
                             ? event.getClient().getWarning() + " Aucune chanson chargée."
-                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "**Chanson chargée.");
+                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "** Chanson(s) chargée(s).");
                     if (!playlist.getErrors().isEmpty())
-                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées:");
+                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
                     playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1)
-                            .append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                            .append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                     String str = builder.toString();
                     if (str.length() > 2000)
-                        str = str.substring(0, 1994) + " (Omis ci-dessous)";
+                        str = str.substring(0, 1994) + " (Suite omise)";
                     m.editMessage(FormatUtil.filter(str)).queue();
                 });
             });
@@ -695,23 +687,22 @@ public class PlayCmd extends MusicCommand {
             String name = event.getOption("name").getAsString();
             PubliclistLoader.Playlist playlist = bot.getPublistLoader().getPlaylist(name);
             if (playlist == null) {
-                event.reply(event.getClient().getError() + "Impossible de trouver `" + name + ".txt").queue();
+                event.reply(event.getClient().getError() + "Impossible de trouver le fichier `" + name + ".txt").queue();
                 return;
             }
-            event.reply(":calling: playlist**" + name + "loading **... (" + playlist.getItems().size() + " chansons)").queue(m ->
-            {
+            event.reply(":calling: Playlist **" + name + "** Chargement en cours... (" + playlist.getItems().size() + " chansons)").queue(m -> {
                 AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                 playlist.loadTracks(bot.getPlayerManager(), (at) -> handler.addTrack(new QueuedTrack(at, event.getUser())), () -> {
                     StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty()
                             ? event.getClient().getWarning() + " Aucune chanson chargée."
-                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "**Chanson chargée.");
+                            : event.getClient().getSuccess() + "**" + playlist.getTracks().size() + "** Chanson(s) chargée(s).");
                     if (!playlist.getErrors().isEmpty())
-                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées:");
+                        builder.append("\nLes chansons suivantes n'ont pas pu être chargées :");
                     playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex() + 1)
-                            .append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
+                            .append("]` **").append(err.getItem()).append("** : ").append(err.getReason()));
                     String str = builder.toString();
                     if (str.length() > 2000)
-                        str = str.substring(0, 1994) + " (Omis ci-dessous)";
+                        str = str.substring(0, 1994) + " (Suite omise)";
                     m.editOriginal(FormatUtil.filter(str)).queue();
                 });
             });

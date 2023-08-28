@@ -20,7 +20,7 @@ public class PlaylistCmd extends DJCommand {
         super(bot);
         this.guildOnly = true;
         this.name = "playlist";
-        this.arguments = "<append|delete|make>";
+        this.arguments = "<ajouter|supprimer|crée|all>";
         this.help = "Gestion des listes de lecture";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.children = new DJCommand[]{
@@ -34,7 +34,7 @@ public class PlaylistCmd extends DJCommand {
     @Override
     public void doCommand(CommandEvent event) {
 
-        StringBuilder builder = new StringBuilder(event.getClient().getWarning() + " Commandes de gestion des listes de lecture:\n");
+        StringBuilder builder = new StringBuilder(event.getClient().getWarning() + " Commandes de gestion des listes de lecture :\n");
         for (Command cmd : this.children)
             builder.append("\n`").append(event.getClient().getPrefix()).append(name).append(" ").append(cmd.getName())
                     .append(" ").append(cmd.getArguments() == null ? "" : cmd.getArguments()).append("` - ").append(cmd.getHelp());
@@ -43,14 +43,14 @@ public class PlaylistCmd extends DJCommand {
 
     @Override
     public void doCommand(SlashCommandEvent slashCommandEvent) {
-        // pas exécuté ici.
+        // Non exécuté ici.
     }
 
     public class MakelistCmd extends DJCommand {
         public MakelistCmd(Bot bot) {
             super(bot);
-            this.name = "make";
-            this.aliases = new String[]{"create"};
+            this.name = "crée";
+            this.aliases = new String[]{"create", "make"};
             this.help = "Créer une nouvelle liste de lecture";
             this.arguments = "<name>";
             this.guildOnly = true;
@@ -72,48 +72,48 @@ public class PlaylistCmd extends DJCommand {
             } else if (bot.getPlaylistLoader().getPlaylist(guildId, pName) == null) {
                 try {
                     bot.getPlaylistLoader().createPlaylist(guildId, pName);
-                    event.reply(event.getClient().getSuccess() + "liste de lecture créée `" + pName + "`");
+                    event.reply(event.getClient().getSuccess() + " Liste de lecture créée `" + pName + "`");
                 } catch (IOException e) {
                     if (event.isOwner() || event.getMember().isOwner()) {
                         event.replyError("Une erreur s'est produite lors du chargement de la chanson.\n" +
-                                "**Contenu de l'erreur: " + e.getLocalizedMessage() + "**");
+                                "**Contenu de l'erreur : " + e.getLocalizedMessage() + "**");
                         StackTraceUtil.sendStackTrace(event.getTextChannel(), e);
                         return;
                     }
 
-                    event.reply(event.getClient().getError() + " Échec de la création de la liste de lecture. :" + e.getLocalizedMessage());
+                    event.reply(event.getClient().getError() + " Échec de la création de la liste de lecture : " + e.getLocalizedMessage());
                 }
             } else {
-                event.reply(event.getClient().getError() + "Playlist `" + pName + "` existe déjà");
+                event.reply(event.getClient().getError() + " Liste de lecture `" + pName + "` existe déjà");
             }
         }
 
         @Override
         public void doCommand(SlashCommandEvent event) {
             if (!checkDJPermission(event.getClient(), event)) {
-                event.reply(event.getClient().getWarning() + "Impossible d'exécuter en raison d'un manque de privilèges.").queue();
+                event.reply(event.getClient().getWarning() + " Impossible d'exécuter en raison d'un manque de privilèges.").queue();
                 return;
             }
             String pname = event.getOption("name").getAsString();
             String guildId = event.getGuild().getId();
             if (pname == null || pname.isEmpty()) {
-                event.reply(event.getClient().getError() + "Veuillez saisir un nom de liste de lecture.").queue();
+                event.reply(event.getClient().getError() + " Veuillez saisir un nom de liste de lecture.").queue();
             } else if (bot.getPlaylistLoader().getPlaylist(guildId, pname) == null) {
                 try {
                     bot.getPlaylistLoader().createPlaylist(guildId, pname);
-                    event.reply(event.getClient().getSuccess() + "liste de lecture créée `" + pname + "`").queue();
+                    event.reply(event.getClient().getSuccess() + " Liste de lecture créée `" + pname + "`").queue();
                 } catch (IOException e) {
-                    if (event.getClient().getOwnerId() == event.getMember().getId() || event.getMember().isOwner()) {
-                        event.reply(event.getClient().getError() + "Une erreur s'est produite lors du chargement de la chanson.\n" +
-                                "** Contenu de l'erreur:" + e.getLocalizedMessage() + "**").queue();
+                    if (event.getClient().getOwnerId().equals(event.getMember().getId()) || event.getMember().isOwner()) {
+                        event.reply(event.getClient().getError() + " Une erreur s'est produite lors du chargement de la chanson.\n" +
+                                "** Contenu de l'erreur : " + e.getLocalizedMessage() + "**").queue();
                         StackTraceUtil.sendStackTrace(event.getTextChannel(), e);
                         return;
                     }
 
-                    event.reply(event.getClient().getError() + " Échec de la création de la liste de lecture.:" + e.getLocalizedMessage()).queue();
+                    event.reply(event.getClient().getError() + " Échec de la création de la liste de lecture : " + e.getLocalizedMessage()).queue();
                 }
             } else {
-                event.reply(event.getClient().getError() + "Playlist `" + pname + "` existe déjà").queue();
+                event.reply(event.getClient().getError() + " Liste de lecture `" + pname + "` existe déjà").queue();
             }
         }
     }
@@ -121,8 +121,8 @@ public class PlaylistCmd extends DJCommand {
     public class DeletelistCmd extends DJCommand {
         public DeletelistCmd(Bot bot) {
             super(bot);
-            this.name = "delete";
-            this.aliases = new String[]{"remove"};
+            this.name = "supprimer";
+            this.aliases = new String[]{"remove", "delete"};
             this.help = "Supprimer la liste de lecture existante";
             this.arguments = "<name>";
             this.guildOnly = true;
@@ -139,36 +139,36 @@ public class PlaylistCmd extends DJCommand {
             String guildid = event.getGuild().getId();
             if (!pname.equals("")) {
                 if (bot.getPlaylistLoader().getPlaylist(guildid, pname) == null)
-                    event.reply(event.getClient().getError() + " la liste de lecture n'existe pas:`" + pname + "`");
+                    event.reply(event.getClient().getError() + " la liste de lecture n'existe pas : `" + pname + "`");
                 else {
                     try {
                         bot.getPlaylistLoader().deletePlaylist(guildid, pname);
-                        event.reply(event.getClient().getSuccess() + " Liste de lecture supprimée :`" + pname + "`");
+                        event.reply(event.getClient().getSuccess() + " Liste de lecture supprimée : `" + pname + "`");
                     } catch (IOException e) {
-                        event.reply(event.getClient().getError() + " Échec de la suppression de la liste de lecture: " + e.getLocalizedMessage());
+                        event.reply(event.getClient().getError() + " Échec de la suppression de la liste de lecture : " + e.getLocalizedMessage());
                     }
                 }
             } else {
-                event.reply(event.getClient().getError() + "Inclure le nom de la liste de lecture");
+                event.reply(event.getClient().getError() + " Inclure le nom de la liste de lecture");
             }
         }
 
         @Override
         public void doCommand(SlashCommandEvent event) {
             if (!checkDJPermission(event.getClient(), event)) {
-                event.reply(event.getClient().getWarning() + "Impossible d'exécuter en raison d'un manque de privilèges.").queue();
+                event.reply(event.getClient().getWarning() + " Impossible d'exécuter en raison d'un manque de privilèges.").queue();
                 return;
             }
             String pname = event.getOption("name").getAsString();
             String guildid = event.getGuild().getId();
             if (bot.getPlaylistLoader().getPlaylist(guildid, pname) == null)
-                event.reply(event.getClient().getError() + " la liste de lecture n'existe pas:`" + pname + "`").queue();
+                event.reply(event.getClient().getError() + " la liste de lecture n'existe pas : `" + pname + "`").queue();
             else {
                 try {
                     bot.getPlaylistLoader().deletePlaylist(guildid, pname);
-                    event.reply(event.getClient().getSuccess() + " Liste de lecture supprimée:`" + pname + "`").queue();
+                    event.reply(event.getClient().getSuccess() + " Liste de lecture supprimée : `" + pname + "`").queue();
                 } catch (IOException e) {
-                    event.reply(event.getClient().getError() + " Échec de la suppression de la liste de lecture: " + e.getLocalizedMessage()).queue();
+                    event.reply(event.getClient().getError() + " Échec de la suppression de la liste de lecture : " + e.getLocalizedMessage()).queue();
                 }
             }
         }
@@ -177,8 +177,8 @@ public class PlaylistCmd extends DJCommand {
     public class AppendlistCmd extends DJCommand {
         public AppendlistCmd(Bot bot) {
             super(bot);
-            this.name = "append";
-            this.aliases = new String[]{"add"};
+            this.name = "ajouter";
+            this.aliases = new String[]{"add", "append"};
             this.help = "Ajouter des chansons à la liste de lecture existante";
             this.arguments = "<name> <URL>| <URL> | ...";
             this.guildOnly = true;
@@ -201,7 +201,7 @@ public class PlaylistCmd extends DJCommand {
             String pname = parts[0];
             Playlist playlist = bot.getPlaylistLoader().getPlaylist(guildid, pname);
             if (playlist == null)
-                event.reply(event.getClient().getError() + " la liste de lecture n'existe pas:`" + pname + "`");
+                event.reply(event.getClient().getError() + " la liste de lecture n'existe pas : `" + pname + "`");
             else {
                 StringBuilder builder = new StringBuilder();
                 playlist.getItems().forEach(item -> builder.append("\r\n").append(item));
@@ -214,9 +214,9 @@ public class PlaylistCmd extends DJCommand {
                 }
                 try {
                     bot.getPlaylistLoader().writePlaylist(guildid, pname, builder.toString());
-                    event.reply(event.getClient().getSuccess() + urls.length + " Élément ajouté à la liste de lecture :`" + pname + "`");
+                    event.reply(event.getClient().getSuccess() + urls.length + " Élément ajouté à la liste de lecture : `" + pname + "`");
                 } catch (IOException e) {
-                    event.reply(event.getClient().getError() + " Échec de l'ajout à la liste de lecture: " + e.getLocalizedMessage());
+                    event.reply(event.getClient().getError() + " Échec de l'ajout à la liste de lecture : " + e.getLocalizedMessage());
                 }
             }
         }
@@ -224,7 +224,7 @@ public class PlaylistCmd extends DJCommand {
         @Override
         public void doCommand(SlashCommandEvent event) {
             if (!checkDJPermission(event.getClient(), event)) {
-                event.reply(event.getClient().getWarning() + "Impossible d'exécuter en raison d'un manque de privilèges.").queue();
+                event.reply(event.getClient().getWarning() + " Impossible d'exécuter en raison d'un manque de privilèges.").queue();
                 return;
             }
 
@@ -232,7 +232,7 @@ public class PlaylistCmd extends DJCommand {
             String pname = event.getOption("name").getAsString();
             Playlist playlist = bot.getPlaylistLoader().getPlaylist(guildid, pname);
             if (playlist == null)
-                event.reply(event.getClient().getError() + " la liste de lecture n'existe pas :`" + pname + "`").queue();
+                event.reply(event.getClient().getError() + " la liste de lecture n'existe pas : `" + pname + "`").queue();
             else {
                 StringBuilder builder = new StringBuilder();
                 playlist.getItems().forEach(item -> builder.append("\r\n").append(item));
@@ -245,9 +245,9 @@ public class PlaylistCmd extends DJCommand {
                 }
                 try {
                     bot.getPlaylistLoader().writePlaylist(guildid, pname, builder.toString());
-                    event.reply(event.getClient().getSuccess() + urls.length + " Élément ajouté à la liste de lecture:`" + pname + "`").queue();
+                    event.reply(event.getClient().getSuccess() + urls.length + " Élément ajouté à la liste de lecture : `" + pname + "`").queue();
                 } catch (IOException e) {
-                    event.reply(event.getClient().getError() + " Échec de l'ajout à la liste de lecture: " + e.getLocalizedMessage()).queue();
+                    event.reply(event.getClient().getError() + " Échec de l'ajout à la liste de lecture : " + e.getLocalizedMessage()).queue();
                 }
             }
         }
@@ -257,7 +257,7 @@ public class PlaylistCmd extends DJCommand {
         public ListCmd(Bot bot) {
             super(bot);
             this.name = "all";
-            this.aliases = new String[]{"available", "list"};
+            this.aliases = new String[]{"available", "list", "disponibles"};
             this.help = "Afficher toutes les listes de lecture disponibles";
             this.guildOnly = true;
             this.ownerCommand = false;
@@ -279,7 +279,7 @@ public class PlaylistCmd extends DJCommand {
             else if (list.isEmpty())
                 event.reply(event.getClient().getWarning() + " Il n'y a pas de listes de lecture dans le dossier de listes de lecture.");
             else {
-                StringBuilder builder = new StringBuilder(event.getClient().getSuccess() + " liste de lecture disponible:\n");
+                StringBuilder builder = new StringBuilder(event.getClient().getSuccess() + " liste de lecture disponible :\n");
                 list.forEach(str -> builder.append("`").append(str).append("` "));
                 event.reply(builder.toString());
             }
@@ -288,7 +288,7 @@ public class PlaylistCmd extends DJCommand {
         @Override
         public void doCommand(SlashCommandEvent event) {
             if (!checkDJPermission(event.getClient(), event)) {
-                event.reply(event.getClient().getWarning() + "Impossible d'exécuter en raison d'un manque de privilèges.").queue();
+                event.reply(event.getClient().getWarning() + " Impossible d'exécuter en raison d'un manque de privilèges.").queue();
                 return;
             }
             String guildId = event.getGuild().getId();
@@ -304,7 +304,7 @@ public class PlaylistCmd extends DJCommand {
             else if (list.isEmpty())
                 event.reply(event.getClient().getWarning() + " Il n'y a pas de listes de lecture dans le dossier de listes de lecture.").queue();
             else {
-                StringBuilder builder = new StringBuilder(event.getClient().getSuccess() + " liste de lecture disponible:\n");
+                StringBuilder builder = new StringBuilder(event.getClient().getSuccess() + " liste de lecture disponible :\n");
                 list.forEach(str -> builder.append("`").append(str).append("` "));
                 event.reply(builder.toString()).queue();
             }

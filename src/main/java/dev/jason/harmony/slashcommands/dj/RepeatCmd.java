@@ -22,10 +22,9 @@ public class RepeatCmd extends DJCommand {
         this.guildOnly = true;
 
         this.children = new SlashCommand[]{new SingleCmd(bot), new AllCmd(bot), new OffCmd(bot)};
-
     }
 
-    // override musiccommand's execute because we don't actually care where this is used
+    // Remplacez la méthode execute de musiccommand car nous ne nous soucions pas vraiment de l'endroit où elle est utilisée
     @Override
     protected void execute(CommandEvent event) {
         RepeatMode value;
@@ -34,7 +33,7 @@ public class RepeatCmd extends DJCommand {
         String args = event.getArgs();
 
         if (args.isEmpty()) {
-            log.info("Mode de lecture avant changement:" + settings.getRepeatMode());
+            log.info("Mode de lecture avant changement : " + settings.getRepeatMode());
             value = (settings.getRepeatMode() == RepeatMode.OFF ? RepeatMode.ALL : (settings.getRepeatMode() == RepeatMode.ALL ? RepeatMode.SINGLE : (settings.getRepeatMode() == RepeatMode.SINGLE ? RepeatMode.OFF : settings.getRepeatMode())));
         } else if (args.equalsIgnoreCase("true") || args.equalsIgnoreCase("all") || args.equalsIgnoreCase("on")) {
             value = RepeatMode.ALL;
@@ -45,9 +44,9 @@ public class RepeatCmd extends DJCommand {
         } else {
             event.replyError("Les options valides sont\n" +
                     "```\n" +
-                    "répéter tout: true, all, on\n" +
-                    "Une répétition: one, single\n" +
-                    "répéter désactivé: false, off" +
+                    "répéter tout : true, all, on\n" +
+                    "Une répétition : one, single\n" +
+                    "répéter désactivé : false, off" +
                     "```\n" +
                     "est\n" +
                     "(ou vous pouvez changer sans options)");
@@ -55,12 +54,12 @@ public class RepeatCmd extends DJCommand {
         }
 
         settings.setRepeatMode(value);
-        log.info(event.getGuild().getName() + "Exécuté une commande de répétition sur et définissez le paramètre sur " + value  + ".");
-        event.replySuccess("Repeat is set to `" + (value == RepeatMode.ALL ? "Enable (répéter toutes les chansons)" : (value == RepeatMode.SINGLE ? "Enable (répéter 1 chanson)" : "Disable")) + "` .");
+        log.info(event.getGuild().getName() + " Exécuté une commande de répétition et définissez le paramètre sur " + value  + ".");
+        event.replySuccess("Repeat est défini sur `" + (value == RepeatMode.ALL ? "Activé (répéter toutes les chansons)" : (value == RepeatMode.SINGLE ? "Activé (répéter 1 chanson)" : "Désactivé")) + "`.");
     }
 
     @Override
-    public void doCommand(CommandEvent event) { /* Intentionally Empty */ }
+    public void doCommand(CommandEvent event) { /* Intentionnellement vide */ }
 
     @Override
     public void doCommand(SlashCommandEvent event) {

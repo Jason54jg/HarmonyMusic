@@ -24,12 +24,12 @@ public class PauseCmd extends DJCommand {
     public void doCommand(CommandEvent event) {
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         if (handler.getPlayer().isPaused()) {
-            event.replyWarning("La chanson est déjà en pause. Vous pouvez la réactiver en utilisant `" + event.getClient().getPrefix() + " play`.");
+            event.replyWarning("La chanson est déjà en pause. Vous pouvez la réactiver en utilisant `" + event.getClient().getPrefix() + "play`.");
             return;
         }
         handler.getPlayer().setPaused(true);
         log.info(event.getGuild().getName() + "En pause à " + handler.getPlayer().getPlayingTrack().getInfo().title + ".");
-                event.replySuccess("**" + handler.getPlayer().getPlayingTrack().getInfo().title + "** en pause. `" + event.getClient().getPrefix() + " Utilisez play` pour reprendre. ");
+        event.replySuccess("**" + handler.getPlayer().getPlayingTrack().getInfo().title + "** en pause. Utilisez `" + event.getClient().getPrefix() + "play` pour reprendre.");
 
         Bot.updatePlayStatus(event.getGuild(), event.getGuild().getSelfMember(), PlayStatus.PAUSED);
     }
@@ -47,7 +47,7 @@ public class PauseCmd extends DJCommand {
         }
         handler.getPlayer().setPaused(true);
         log.info(event.getGuild().getName() + "En pause à " + handler.getPlayer().getPlayingTrack().getInfo().title + ".");
-                event.reply(event.getClient().getSuccess() + "**" + handler.getPlayer().getPlayingTrack().getInfo().title + "** paused. Utilisez `" + event.getClient(). getPrefix() + "play` pour reprendre.").queue();
+        event.reply(event.getClient().getSuccess() + "**" + handler.getPlayer().getPlayingTrack().getInfo().title + "** en pause. Utilisez `" + event.getClient().getPrefix() + "play` pour reprendre.").queue();
 
         Bot.updatePlayStatus(event.getGuild(), event.getGuild().getSelfMember(), PlayStatus.PAUSED);
     }

@@ -5,17 +5,17 @@ import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import net.dv8tion.jda.api.Permission;
 
-public class InviteCommand extends SlashCommand {
-    public InviteCommand() {
+public class CommandeInvitation extends SlashCommand {
+    public CommandeInvitation() {
         this.name = "invite";
-        this.help = "Afficher l'URL d'invitation du bot";
+        this.help = "Affiche l'URL d'invitation du bot";
         this.guildOnly = false;
-        this.aliases = new String[]{"share"};
+        this.aliases = new String[]{"partager"};
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
-        long botId = event.getJDA().getSelfUser().getIdLong();
+        long idBot = event.getJDA().getSelfUser().getIdLong();
         Permission[] permissions = new Permission[]
                 {
                         Permission.MANAGE_CHANNEL,
@@ -29,12 +29,12 @@ public class InviteCommand extends SlashCommand {
                         Permission.MESSAGE_EXT_EMOJI
                 };
 
-        event.reply(String.format("https://discord.com/oauth2/authorize?client_id=%s&scope=bot%20applications.commands&permissions=%s", botId, Permission.getRaw(permissions))).queue();
+        event.reply(String.format("https://discord.com/oauth2/authorize?client_id=%s&scope=bot%20applications.commands&permissions=%s", idBot, Permission.getRaw(permissions))).queue();
     }
 
     @Override
     protected void execute(CommandEvent event) {
-        long botId = event.getSelfUser().getIdLong();
+        long idBot = event.getSelfUser().getIdLong();
         Permission[] permissions = new Permission[]
                 {
                         Permission.MANAGE_CHANNEL,
@@ -48,8 +48,6 @@ public class InviteCommand extends SlashCommand {
                         Permission.MESSAGE_EXT_EMOJI
                 };
 
-        event.replyFormatted("https://discord.com/oauth2/authorize?client_id=%s&scope=bot&permissions=%s", botId, Permission.getRaw(permissions));
+        event.replyFormatted("https://discord.com/oauth2/authorize?client_id=%s&scope=bot&permissions=%s", idBot, Permission.getRaw(permissions));
     }
-
-
 }

@@ -48,19 +48,19 @@ public class PlaynextCmd extends DJCommand {
         String args = event.getArgs().startsWith("<") && event.getArgs().endsWith(">")
                 ? event.getArgs().substring(1, event.getArgs().length() - 1)
                 : event.getArgs().isEmpty() ? event.getMessage().getAttachments().get(0).getUrl() : event.getArgs();
-        log.info(event.getGuild().getName() + "A commencé à lire [" + args + "] à.");
-        event.reply(loadingEmoji + "Chargement `[" + args + "]`...", m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), args, new ResultHandler(m, event, false)));
+        log.info(event.getGuild().getName() + " a commencé à lire [" + args + "].");
+        event.reply(loadingEmoji + "Chargement de `[" + args + "]`...", m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), args, new ResultHandler(m, event, false)));
     }
 
     @Override
     public void doCommand(SlashCommandEvent event) {
         if (!checkDJPermission(event.getClient(), event)) {
-            event.reply(event.getClient().getWarning() + "Impossible d'exécuter en raison d'un manque de privilèges.").queue();
+            event.reply(event.getClient().getWarning() + " Impossible d'exécuter en raison d'un manque de privilèges.").queue();
             return;
         }
         String args = event.getOption("title").getAsString();
-        log.info(event.getGuild().getName() + "A commencé à lire [" + args + "] à.");
-        event.reply(loadingEmoji + "Chargement `[" + args + "]`...").queue(m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), args, new SlashResultHandler(m, event, false)));
+        log.info(event.getGuild().getName() + " a commencé à lire [" + args + "].");
+        event.reply(loadingEmoji + "Chargement de `[" + args + "]`...").queue(m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), args, new SlashResultHandler(m, event, false)));
     }
 
     private class SlashResultHandler implements AudioLoadResultHandler {
@@ -119,7 +119,7 @@ public class PlaynextCmd extends DJCommand {
                 m.editOriginal(event.getClient().getError() + " erreur de chargement: " + throwable.getMessage()).queue();
             else
                 m.editOriginal(event.getClient().getError() + " Une erreur s'est produite lors du chargement du morceau.").queue();
-            log.info(event.getGuild().getName() + "Une erreur de chargement est apparue.");
+            log.info(event.getGuild().getName() + " Une erreur de chargement est apparue.");
         }
     }
 
@@ -180,7 +180,7 @@ public class PlaynextCmd extends DJCommand {
                 m.editMessage(event.getClient().getError() + " erreur de chargement: " + throwable.getMessage()).queue();
             else
                 m.editMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement du morceau.").queue();
-            log.info(event.getGuild().getName() + "Une erreur de chargement est apparue.");
+            log.info(event.getGuild().getName() + " Une erreur de chargement est apparue.");
         }
     }
 }

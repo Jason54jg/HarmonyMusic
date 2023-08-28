@@ -18,7 +18,7 @@ import java.util.List;
 public class RemoveCmd extends MusicCommand {
     public RemoveCmd(Bot bot) {
         super(bot);
-        this.name = "remove";
+        this.name = "supprimer";
         this.help = "Supprimer la chanson de la file d'attente de lecture";
         this.arguments = "<numéro|Tous>";
         this.aliases = bot.getConfig().getAliases(this.name);
@@ -33,7 +33,7 @@ public class RemoveCmd extends MusicCommand {
     public void doCommand(CommandEvent event) {
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         if (handler.getQueue().isEmpty()) {
-            event.replyError("Rien n'attend de jouer.");
+            event.replyError("Rien n'attend d'être joué.");
             return;
         }
         if (event.getArgs().toLowerCase().matches("(tous)")) {
@@ -41,7 +41,7 @@ public class RemoveCmd extends MusicCommand {
             if (count == 0)
                 event.replyWarning("Il n'y a pas de chansons dans la file d'attente de lecture.");
             else
-                event.replySuccess(count + "Chanson supprimée.");
+                event.replySuccess(count + " chanson(s) supprimée(s).");
             return;
         }
         int pos;
@@ -61,7 +61,7 @@ public class RemoveCmd extends MusicCommand {
         QueuedTrack qt = handler.getQueue().get(pos - 1);
         if (qt.getIdentifier() == event.getAuthor().getIdLong()) {
             handler.getQueue().remove(pos - 1);
-            event.replySuccess("**" + qt.getTrack().getInfo().title + "** retiré de la file d'attente.");
+            event.replySuccess("**" + qt.getTrack().getInfo().title + "** retirée de la file d'attente.");
         } else if (isDJ) {
             handler.getQueue().remove(pos - 1);
             User u;
@@ -71,7 +71,7 @@ public class RemoveCmd extends MusicCommand {
                 u = null;
             }
             event.replySuccess("**" + qt.getTrack().getInfo().title
-                    + "** supprimé de la file d'attente.\n(Cette chanson est " + (u == null ? "Quelqu'un l'a demandée." : "**" + u.getName() + "** a demandé que je l'ai fait.") + " )");
+                    + "** supprimée de la file d'attente.\n(Cette chanson a été demandée par " + (u == null ? "quelqu'un d'autre." : "**" + u.getName() + "**.") + " )");
         } else {
             event.replySuccess("Suppression de **" + qt.getTrack().getInfo().title + "** de la file d'attente.");
         }
@@ -81,7 +81,7 @@ public class RemoveCmd extends MusicCommand {
     public void doCommand(SlashCommandEvent event) {
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         if (handler.getQueue().isEmpty()) {
-            event.reply(event.getClient().getError() + "Rien n'attend de jouer.").queue();
+            event.reply(event.getClient().getError() + "Rien n'attend d'être joué.").queue();
             return;
         }
 
@@ -90,7 +90,7 @@ public class RemoveCmd extends MusicCommand {
             if (count == 0)
                 event.reply(event.getClient().getWarning() + "Il n'y a pas de chansons dans la file d'attente de lecture.").queue();
             else
-                event.reply(event.getClient().getSuccess() + count + "Chanson supprimée.").queue();
+                event.reply(event.getClient().getSuccess() + count + " chanson(s) supprimée(s).").queue();
             return;
         }
         int pos;
@@ -110,7 +110,7 @@ public class RemoveCmd extends MusicCommand {
         QueuedTrack qt = handler.getQueue().get(pos - 1);
         if (qt.getIdentifier() == event.getUser().getIdLong()) {
             handler.getQueue().remove(pos - 1);
-            event.reply(event.getClient().getSuccess() + "**" + qt.getTrack().getInfo().title + "** retiré de la file d'attente.").queue();
+            event.reply(event.getClient().getSuccess() + "**" + qt.getTrack().getInfo().title + "** retirée de la file d'attente.").queue();
         } else if (isDJ) {
             handler.getQueue().remove(pos - 1);
             User u;
@@ -120,9 +120,9 @@ public class RemoveCmd extends MusicCommand {
                 u = null;
             }
             event.reply(event.getClient().getSuccess() + "**" + qt.getTrack().getInfo().title
-                    + "** supprimé de la file d'attente.\n(Cette chanson est " + (u == null ? "Quelqu'un l'a demandée." : "**" + u.getName() + "** a demandé que je l'ai fait.") + " )").queue();
+                    + "** supprimée de la file d'attente.\n(Cette chanson a été demandée par " + (u == null ? "quelqu'un d'autre." : "**" + u.getName() + "**.") + " )").queue();
         } else {
-            event.reply(event.getClient().getError() + "**" + qt.getTrack().getInfo().title + "** n'a pas pu être supprimé. Raison: avez-vous des droits de DJ? Vous ne pouvez supprimer que vos propres demandes.").queue();
+            event.reply(event.getClient().getError() + "**" + qt.getTrack().getInfo().title + "** n'a pas pu être supprimée. Raison : avez-vous les droits de DJ ? Vous ne pouvez supprimer que vos propres demandes.").queue();
         }
     }
 }

@@ -7,7 +7,7 @@ public class SCSearchCmd extends SearchCmd {
         super(bot);
         this.searchPrefix = "scsearch:";
         this.name = "scsearch";
-        this.help = "Rechercher Soundcloud en utilisant la chaîne spécifiée";
+        this.help = "Rechercher sur Soundcloud en utilisant la chaîne spécifiée";
         this.aliases = bot.getConfig().getAliases(this.name);
     }
 }

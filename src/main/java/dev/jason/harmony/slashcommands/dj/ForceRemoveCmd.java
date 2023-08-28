@@ -28,33 +28,33 @@ public class ForceRemoveCmd extends DJCommand {
         this.bePlaying = true;
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
 
+        // Définir l'option pour la commande slash
         List<OptionData> options = new ArrayList<>();
         options.add(new OptionData(OptionType.USER, "utilisateur", "utilisateur", true));
         this.options = options;
-
     }
 
     @Override
     public void doCommand(CommandEvent event) {
         if (event.getArgs().isEmpty()) {
-            event.replyError("Je dois mentionner l'utilisateur!");
+            event.replyError("Je dois mentionner l'utilisateur !");
             return;
         }
 
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         if (handler.getQueue().isEmpty()) {
-            event.replyError("Rien n'attend pour jouer !");
+            event.replyError("Rien n'attend pour être joué !");
             return;
         }
-
 
         User target;
         List<Member> found = FinderUtil.findMembers(event.getArgs(), event.getGuild());
 
         if (found.isEmpty()) {
-            event.replyError("Utilisateur non trouvé!");
+            event.replyError("Utilisateur non trouvé !");
             return;
         } else if (found.size() > 1) {
+            // Créer un menu pour sélectionner parmi les utilisateurs trouvés
             OrderedMenu.Builder builder = new OrderedMenu.Builder();
             for (int i = 0; i < found.size() && i < 4; i++) {
                 Member member = found.get(i);
@@ -63,7 +63,7 @@ public class ForceRemoveCmd extends DJCommand {
 
             builder
                     .setSelection((msg, i) -> removeAllEntries(found.get(i - 1).getUser(), event))
-                    .setText("Plusieurs utilisateurs trouvés:")
+                    .setText("Plusieurs utilisateurs trouvés :")
                     .setColor(event.getSelfMember().getColor())
                     .useNumbers()
                     .setUsers(event.getAuthor())
@@ -72,7 +72,6 @@ public class ForceRemoveCmd extends DJCommand {
                     })
                     .setEventWaiter(bot.getWaiter())
                     .setTimeout(1, TimeUnit.MINUTES)
-
                     .build().display(event.getChannel());
 
             return;
@@ -81,7 +80,6 @@ public class ForceRemoveCmd extends DJCommand {
         }
 
         removeAllEntries(target, event);
-
     }
 
     @Override
@@ -90,27 +88,28 @@ public class ForceRemoveCmd extends DJCommand {
             event.reply(event.getClient().getWarning() + "Impossible d'exécuter en raison d'un manque de privilèges.").queue();
             return;
         }
+
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         if (handler.getQueue().isEmpty()) {
-            event.reply(event.getClient().getError() + "Rien n'attend pour jouer !").queue();
+            event.reply(event.getClient().getError() + "Rien n'attend pour être joué !").queue();
             return;
         }
 
         User target = event.getOption("utilisateur").getAsUser();
         int count = ((AudioHandler) event.getGuild().getAudioManager().getSendingHandler()).getQueue().removeAll(target.getIdLong());
         if (count == 0) {
-            event.reply(event.getClient().getWarning() + "**" + target.getName() + "Aucune chanson en file d'attente pour **!").queue();
+            event.reply(event.getClient().getWarning() + "**" + target.getName() + "** Aucune chanson en file d'attente !").queue();
         } else {
-            event.reply(event.getClient().getSuccess() + "**" + target.getName() + "**#" + target.getDiscriminator() + count + " chansons supprimées.").queue();
+            event.reply(event.getClient().getSuccess() + "**" + target.getName() + "**#" + target.getDiscriminator() + " - " + count + " chansons supprimées.").queue();
         }
     }
 
     private void removeAllEntries(User target, CommandEvent event) {
         int count = ((AudioHandler) event.getGuild().getAudioManager().getSendingHandler()).getQueue().removeAll(target.getIdLong());
         if (count == 0) {
-            event.replyWarning("**" + target.getName() + "Aucune chanson en file d'attente pour **!");
+            event.replyWarning("**" + target.getName() + "** Aucune chanson en file d'attente !");
         } else {
-            event.replySuccess("**" + target.getName() + "**#" + target.getDiscriminator() + count + " chansons supprimées.");
+            event.replySuccess("**" + target.getName() + "**#" + target.getDiscriminator() + " - " + count + " chansons supprimées.");
         }
     }
 }

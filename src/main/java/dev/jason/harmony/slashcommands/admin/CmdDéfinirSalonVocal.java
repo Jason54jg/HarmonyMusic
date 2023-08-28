@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetvcCmd extends AdminCommand {
-    public SetvcCmd(Bot bot) {
-        this.name = "setvc";
+public class CmdDéfinirSalonVocal extends AdminCommand {
+    public CmdDéfinirSalonVocal(Bot bot) {
+        this.name = "definirsalonvocal";
         this.help = "Définir le canal audio utilisé pour la lecture.";
         this.arguments = "<canal|aucun>";
         this.aliases = bot.getConfig().getAliases(this.name);

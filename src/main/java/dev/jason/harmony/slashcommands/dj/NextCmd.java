@@ -12,7 +12,7 @@ public class NextCmd extends DJCommand {
     public NextCmd(Bot bot) {
         super(bot);
         this.name = "next";
-        this.help = "Si le mode de répétition est activé, sautez la chanson en cours sans la retirer de la file d'attente";
+        this.help = "Si le mode de répétition est activé, la chanson suivante ne sera pas retirer de la file d'attente";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.bePlaying = true;
     }
@@ -26,7 +26,7 @@ public class NextCmd extends DJCommand {
         handler.addTrackIfRepeat(track);
 
         event.reply(event.getClient().getSuccess() + " **" + handler.getPlayer().getPlayingTrack().getInfo().title
-                + "** ignoré. (" + (u == null ? "quelqu'un" : "**" + u.getName() + "**") + "demandé.)");
+                + "** ignorée. (" + (u == null ? "quelqu'un" : "**" + u.getName() + "**") + " a demandé.)");
         handler.getPlayer().stopTrack();
     }
 
@@ -43,7 +43,7 @@ public class NextCmd extends DJCommand {
         handler.addTrackIfRepeat(track);
 
         event.reply(client.getSuccess() + " **" + handler.getPlayer().getPlayingTrack().getInfo().title
-                + "** ignoré. (" + (u == null ? "quelqu'un" : "**" + u.getName() + "**") + "demandé.)").queue();
+                + "** ignorée. (" + (u == null ? "quelqu'un" : "**" + u.getName() + "**") + " a demandé.)").queue();
         handler.getPlayer().stopTrack();
     }
 }

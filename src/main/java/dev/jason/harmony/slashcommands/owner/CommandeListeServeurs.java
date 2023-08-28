@@ -8,12 +8,12 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.List;
 
-public class ServerListCmd extends OwnerCommand {
+public class CommandeListeServeurs extends OwnerCommand {
     protected Bot bot;
 
-    public ServerListCmd(Bot bot) {
-        this.name = "slist";
-        this.help = "Définissez le rôle DJ qui peut utiliser les commandes du bot.";
+    public CommandeListeServeurs(Bot bot) {
+        this.name = "listeserveurs";
+        this.help = "Affiche la liste des serveurs où le bot est présent.";
         this.aliases = bot.getConfig().getAliases(this.name);
     }
 
@@ -23,7 +23,7 @@ public class ServerListCmd extends OwnerCommand {
 
         StringBuilder stringBuilder = new StringBuilder();
         for (Guild guild : guilds) {
-            stringBuilder.append(guild.getName()).append(guild.getId()).append("\n");
+            stringBuilder.append(guild.getName()).append(" - ").append(guild.getId()).append("\n");
         }
 
         event.reply(stringBuilder.toString()).queue();
@@ -35,7 +35,7 @@ public class ServerListCmd extends OwnerCommand {
 
         StringBuilder stringBuilder = new StringBuilder();
         for (Guild guild : guilds) {
-            stringBuilder.append(guild.getName()).append(guild.getId()).append("\n");
+            stringBuilder.append(guild.getName()).append(" - ").append(guild.getId()).append("\n");
         }
 
         event.reply(stringBuilder.toString());

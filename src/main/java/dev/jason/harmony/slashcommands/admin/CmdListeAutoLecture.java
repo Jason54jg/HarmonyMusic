@@ -11,14 +11,14 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AutoplaylistCmd extends AdminCommand {
+public class CmdListeAutoLecture extends AdminCommand {
     private final Bot bot;
 
     // Constructeur de la commande de gestion de la liste de lecture automatique
-    public AutoplaylistCmd(Bot bot) {
+    public CmdListeAutoLecture(Bot bot) {
         this.bot = bot;
         this.guildOnly = true;
-        this.name = "autoplaylist";
+        this.name = "listeautolecture";
         this.arguments = "<nom|aucun>";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.help = "Configurer la liste de lecture automatique du serveur";

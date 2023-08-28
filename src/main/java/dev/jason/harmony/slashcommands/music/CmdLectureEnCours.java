@@ -8,10 +8,10 @@ import dev.jason.harmony.slashcommands.MusicCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
-public class NowplayingCmd extends MusicCommand {
-    public NowplayingCmd(Bot bot) {
+public class CmdLectureEnCours extends MusicCommand {
+    public CmdLectureEnCours(Bot bot) {
         super(bot);
-        this.name = "nowplaying";
+        this.name = "enlecture";
         this.help = "Afficher la chanson en cours de lecture";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};

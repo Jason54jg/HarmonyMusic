@@ -29,80 +29,80 @@ public class DebugCmd extends OwnerCommand {
     @Override
     protected void execute(SlashCommandEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Propriétés du système:");
+        sb.append("Propriétés du système :");
         for (String key : PROPERTIES)
             sb.append("\n  ").append(key).append(" = ").append(System.getProperty(key));
-        sb.append("\n\nInformations sur Harmony:")
+        sb.append("\n\nInformations sur Harmony :")
                 .append("\n  Version = ").append(OtherUtil.getCurrentVersion())
                 .append("\n  Owner = ").append(bot.getConfig().getOwnerId())
-                .append("\n  Prefix = ").append(bot.getConfig().getPrefix())
-                .append("\n  AltPrefix = ").append(bot.getConfig().getAltPrefix())
-                .append("\n  MaxSeconds = ").append(bot.getConfig().getMaxSeconds())
-                .append("\n  NPImages = ").append(bot.getConfig().useNPImages())
-                .append("\n  SongInStatus = ").append(bot.getConfig().getSongInStatus())
-                .append("\n  StayInChannel = ").append(bot.getConfig().getStay())
-                .append("\n  UseEval = ").append(bot.getConfig().useEval())
-                .append("\n  UpdateAlerts = ").append(bot.getConfig().useUpdateAlerts());
-        sb.append("\n\ninformations sur la dépendance:")
-                .append("\n  JDA Version = ").append(JDAInfo.VERSION)
-                .append("\n  JDA-Utilities Version = ").append(JDAUtilitiesInfo.VERSION)
-                .append("\n  Lavaplayer Version = ").append(PlayerLibrary.VERSION);
+                .append("\n  Préfixe = ").append(bot.getConfig().getPrefix())
+                .append("\n  AltPréfixe = ").append(bot.getConfig().getAltPrefix())
+                .append("\n  MaxSecondes = ").append(bot.getConfig().getMaxSeconds())
+                .append("\n  ImagesNP = ").append(bot.getConfig().useNPImages())
+                .append("\n  ChansonEnStatut = ").append(bot.getConfig().getSongInStatus())
+                .append("\n  ResterDansLeSalon = ").append(bot.getConfig().getStay())
+                .append("\n  UtiliserEval = ").append(bot.getConfig().useEval())
+                .append("\n  AlertesMisesÀJour = ").append(bot.getConfig().useUpdateAlerts());
+        sb.append("\n\nInformations sur la dépendance :")
+                .append("\n  Version de JDA = ").append(JDAInfo.VERSION)
+                .append("\n  Version de JDA-Utilities = ").append(JDAUtilitiesInfo.VERSION)
+                .append("\n  Version de Lavaplayer = ").append(PlayerLibrary.VERSION);
         long total = Runtime.getRuntime().totalMemory() / 1024 / 1024;
         long used = total - (Runtime.getRuntime().freeMemory() / 1024 / 1024);
-        sb.append("\n\ninformations d'exécution:")
-                .append("\n  Total Memory = ").append(total)
-                .append("\n  Used Memory = ").append(used);
-        sb.append("\n\nInformations sur la discorde:")
+        sb.append("\n\nInformations d'exécution :")
+                .append("\n  Mémoire totale = ").append(total)
+                .append("\n  Mémoire utilisée = ").append(used);
+        sb.append("\n\nInformations sur Discord :")
                 .append("\n  ID = ").append(event.getJDA().getSelfUser().getId())
-                .append("\n  Guilds = ").append(event.getJDA().getGuildCache().size())
-                .append("\n  Users = ").append(event.getJDA().getUserCache().size());
+                .append("\n  Guildes = ").append(event.getJDA().getGuildCache().size())
+                .append("\n  Utilisateurs = ").append(event.getJDA().getUserCache().size());
         sb.append("\nSi vous souhaitez envoyer ce fichier au développeur, veuillez l'envoyer sans modification.")
                 .append("\nCe fichier ne contient aucune donnée pouvant être utilisée pour identifier vos informations personnelles, prendre le contrôle de votre compte, etc.");
 
         if (event.isFromGuild() || event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
-            event.reply("informations de débogage").queue();
-            event.getChannel().sendFiles(FileUpload.fromData(sb.toString().getBytes(), "debug_information.txt")).queue();
+            event.reply("Informations de débogage :").queue();
+            event.getChannel().sendFiles(FileUpload.fromData(sb.toString().getBytes(), "informations_debogage.txt")).queue();
         } else {
-            event.reply("infos de débogage: ```\n" + sb + "\n```").queue();
+            event.reply("Informations de débogage : ```\n" + sb + "\n```").queue();
         }
     }
 
     @Override
     protected void execute(CommandEvent event) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Propriété système:");
+        sb.append("Propriétés système :");
         for (String key : PROPERTIES)
             sb.append("\n  ").append(key).append(" = ").append(System.getProperty(key));
-        sb.append("\n\nInformations sur Harmony:")
+        sb.append("\n\nInformations sur Harmony :")
                 .append("\n  Version = ").append(OtherUtil.getCurrentVersion())
                 .append("\n  Owner = ").append(bot.getConfig().getOwnerId())
-                .append("\n  Prefix = ").append(bot.getConfig().getPrefix())
-                .append("\n  AltPrefix = ").append(bot.getConfig().getAltPrefix())
-                .append("\n  MaxSeconds = ").append(bot.getConfig().getMaxSeconds())
-                .append("\n  NPImages = ").append(bot.getConfig().useNPImages())
-                .append("\n  SongInStatus = ").append(bot.getConfig().getSongInStatus())
-                .append("\n  StayInChannel = ").append(bot.getConfig().getStay())
-                .append("\n  UseEval = ").append(bot.getConfig().useEval())
-                .append("\n  UpdateAlerts = ").append(bot.getConfig().useUpdateAlerts());
-        sb.append("\n\ninformations sur la dépendance:")
-                .append("\n  JDA Version = ").append(JDAInfo.VERSION)
-                .append("\n  JDA-Utilities Version = ").append(JDAUtilitiesInfo.VERSION)
-                .append("\n  Lavaplayer Version = ").append(PlayerLibrary.VERSION);
+                .append("\n  Préfixe = ").append(bot.getConfig().getPrefix())
+                .append("\n  AltPréfixe = ").append(bot.getConfig().getAltPrefix())
+                .append("\n  MaxSecondes = ").append(bot.getConfig().getMaxSeconds())
+                .append("\n  ImagesNP = ").append(bot.getConfig().useNPImages())
+                .append("\n  ChansonEnStatut = ").append(bot.getConfig().getSongInStatus())
+                .append("\n  ResterDansLeSalon = ").append(bot.getConfig().getStay())
+                .append("\n  UtiliserEval = ").append(bot.getConfig().useEval())
+                .append("\n  AlertesMisesÀJour = ").append(bot.getConfig().useUpdateAlerts());
+        sb.append("\n\nInformations sur la dépendance :")
+                .append("\n  Version de JDA = ").append(JDAInfo.VERSION)
+                .append("\n  Version de JDA-Utilities = ").append(JDAUtilitiesInfo.VERSION)
+                .append("\n  Version de Lavaplayer = ").append(PlayerLibrary.VERSION);
         long total = Runtime.getRuntime().totalMemory() / 1024 / 1024;
         long used = total - (Runtime.getRuntime().freeMemory() / 1024 / 1024);
-        sb.append("\n\ninformations d'exécution:")
-                .append("\n  Total Memory = ").append(total)
-                .append("\n  Used Memory = ").append(used);
-        sb.append("\n\nInformations sur la discorde:")
+        sb.append("\n\nInformations d'exécution :")
+                .append("\n  Mémoire totale = ").append(total)
+                .append("\n  Mémoire utilisée = ").append(used);
+        sb.append("\n\nInformations sur Discord :")
                 .append("\n  ID = ").append(event.getJDA().getSelfUser().getId())
-                .append("\n  Guilds = ").append(event.getJDA().getGuildCache().size())
-                .append("\n  Users = ").append(event.getJDA().getUserCache().size());
+                .append("\n  Guildes = ").append(event.getJDA().getGuildCache().size())
+                .append("\n  Utilisateurs = ").append(event.getJDA().getUserCache().size());
         sb.append("\nSi vous souhaitez envoyer ce fichier au développeur, veuillez l'envoyer sans modification.");
 
         if (event.isFromType(ChannelType.PRIVATE)
                 || event.getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_ATTACH_FILES))
-            event.getChannel().sendFiles(FileUpload.fromData(sb.toString().getBytes(), "debug_information.txt")).queue();
+            event.getChannel().sendFiles(FileUpload.fromData(sb.toString().getBytes(), "informations_debogage.txt")).queue();
         else
-            event.reply("Informations de débogage: ```\n" + sb + "\n```");
+            event.reply("Informations de débogage : ```\n" + sb + "\n```");
     }
 }

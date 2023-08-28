@@ -18,11 +18,11 @@ public class EvalCmd extends OwnerCommand {
     public EvalCmd(Bot bot) {
         this.bot = bot;
         this.name = "eval";
-        this.help = "exécuter le code nashorn";
+        this.help = "Exécuter le code Nashorn";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.guildOnly = false;
         List<OptionData> options = new ArrayList<>();
-        options.add(new OptionData(OptionType.STRING, "code", "code à exécuter", true));
+        options.add(new OptionData(OptionType.STRING, "code", "Code à exécuter", true));
         this.options = options;
     }
 
@@ -35,7 +35,7 @@ public class EvalCmd extends OwnerCommand {
         se.put("guild", event.getGuild());
         se.put("channel", event.getChannel());
         try {
-            event.reply(event.getClient().getSuccess() + " Exécuté avec succès:\n```\n" + se.eval(event.getOption("code").getAsString()) + " ```").queue();
+            event.reply(event.getClient().getSuccess() + " Exécution réussie:\n```\n" + se.eval(event.getOption("code").getAsString()) + " ```").queue();
         } catch (Exception e) {
             event.reply(event.getClient().getError() + " Une exception s'est produite\n```\n" + e + " ```").queue();
         }
@@ -50,10 +50,9 @@ public class EvalCmd extends OwnerCommand {
         se.put("guild", event.getGuild());
         se.put("channel", event.getChannel());
         try {
-            event.reply(event.getClient().getSuccess() + " Exécuté avec succès:\n```\n" + se.eval(event.getArgs()) + " ```");
+            event.reply(event.getClient().getSuccess() + " Exécution réussie:\n```\n" + se.eval(event.getArgs()) + " ```");
         } catch (Exception e) {
             event.reply(event.getClient().getError() + " Une exception s'est produite\n```\n" + e + " ```");
         }
     }
-
 }

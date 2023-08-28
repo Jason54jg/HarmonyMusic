@@ -10,28 +10,28 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetnameCmd extends OwnerCommand {
+public class CommandeDefinirNom extends OwnerCommand {
     protected Bot bot;
 
-    public SetnameCmd(Bot bot) {
+    public CommandeDefinirNom(Bot bot) {
         this.bot = bot;
-        this.name = "setname";
+        this.name = "definirnom";
         this.help = "Définit le nom du bot.";
-        this.arguments = "<name>";
+        this.arguments = "<nom>";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.guildOnly = false;
 
         List<OptionData> options = new ArrayList<>();
-        options.add(new OptionData(OptionType.STRING, "name", "nouveau nom de robot", true));
+        options.add(new OptionData(OptionType.STRING, "nom", "nouveau nom du bot", true));
         this.options = options;
     }
 
     @Override
     protected void execute(SlashCommandEvent event) {
         try {
-            String oldname = event.getJDA().getSelfUser().getName();
-            event.getJDA().getSelfUser().getManager().setName(event.getOption("name").getAsString()).complete(false);
-            event.reply(event.getClient().getSuccess() + "Bot renommé de `" + oldname + "` à `" + event.getOption("name").getAsString() + "`.").queue();
+            String ancienNom = event.getJDA().getSelfUser().getName();
+            event.getJDA().getSelfUser().getManager().setName(event.getOption("nom").getAsString()).complete(false);
+            event.reply(event.getClient().getSuccess() + "Le bot a été renommé de `" + ancienNom + "` à `" + event.getOption("nom").getAsString() + "`.").queue();
         } catch (RateLimitedException e) {
             event.reply(event.getClient().getError() + "Vous ne pouvez changer de nom que deux fois par heure.").queue();
         } catch (Exception e) {

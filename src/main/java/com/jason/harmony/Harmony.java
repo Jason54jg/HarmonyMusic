@@ -12,7 +12,7 @@ import com.jason.harmony.utils.OtherUtil;
 import dev.jason.harmony.slashcommands.admin.*;
 import dev.jason.harmony.slashcommands.dj.*;
 import dev.jason.harmony.slashcommands.general.*;
-import dev.jason.harmony.slashcommands.listeners.CommandAudit;
+import dev.jason.harmony.slashcommands.listeners.AuditCommande;
 import dev.jason.harmony.slashcommands.music.*;
 import dev.jason.harmony.slashcommands.owner.*;
 import net.dv8tion.jda.api.JDA;
@@ -99,12 +99,12 @@ public class Harmony {
         Bot bot = new Bot(waiter, config, settings);
         Bot.INSTANCE = bot;
 
-        AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),
+        CommandeAPropos aboutCommand = new CommandeAPropos(Color.BLUE.brighter(),
                 "[Harmony(v" + version + ")](https://github.com/Jason54jg/Harmony)",
                 new String[]{"Lecture de musique de haute qualité", "Technologie FairQueue™"},
                 RECOMMENDED_PERMS);
-        aboutCommand.setIsAuthor(false);
-        aboutCommand.setReplacementCharacter("\uD83C\uDFB6"); // 🎶
+        aboutCommand.setEstAuteur(false);
+        aboutCommand.setCaractereRemplacement("\uD83C\uDFB6"); // 🎶
 
         // set up the command client
         CommandClientBuilder cb = new CommandClientBuilder()
@@ -115,7 +115,7 @@ public class Harmony {
                 .useHelpBuilder(false)
                 .setLinkedCacheSize(200)
                 .setGuildSettingsManager(settings)
-                .setListener(new CommandAudit());
+                .setListener(new AuditCommande());
 
         if (config.isOfficialInvite()) {
             cb.setServerInvite("https://discord.gg/Fpm9qvKbbV");
@@ -123,26 +123,24 @@ public class Harmony {
 
         // Implémentation des commandes slash
         List<SlashCommand> slashCommandList = new ArrayList<>() {{
-            add(new HelpCmd(bot));
+            add(new CommandeAide(bot));
             add(aboutCommand);
             if (config.isUseInviteCommand()) {
-                add(new InviteCommand());
+                add(new CommandeInvitation());
             }
-            add(new PingCommand());
-            add(new SettingsCmd(bot));
-            //if (config.getCosgyDevHost()) add(new InfoCommand(bot));
+            add(new CommandePing());
+            add(new ParametresCmd(bot));
             // General
-            add(new ServerInfo(bot));
-            //add(new UserInfo());
-            add(new CashCmd(bot));
+            add(new InfosServeur(bot));
+            add(new InfosUtilisateur());
+            add(new CommandeCache(bot));
             // Music
-            add(new LyricsCmd(bot));
-            add(new NowplayingCmd(bot));
+            add(new ParolesCmd(bot));
+            add(new CmdLectureEnCours(bot));
             add(new PlayCmd(bot));
             add(new SpotifyCmd(bot));
             add(new PlaylistsCmd(bot));
             add(new MylistCmd(bot));
-            //add(new QueueCmd(bot));
             add(new QueueCmd(bot));
             add(new RemoveCmd(bot));
             add(new SearchCmd(bot));
@@ -157,30 +155,27 @@ public class Harmony {
             add(new MoveTrackCmd(bot));
             add(new PauseCmd(bot));
             add(new PlaynextCmd(bot));
-            //add(new RepeatCmd(bot));
             add(new RepeatCmd(bot));
             add(new SkipToCmd(bot));
             add(new PlaylistCmd(bot));
             add(new StopCmd(bot));
-            //add(new VolumeCmd(bot));
             // Admin
-            //add(new ActivateCmd(bot));
-            add(new PrefixCmd(bot));
-            add(new SetdjCmd(bot));
+            add(new CmdPréfixe(bot));
+            add(new CmdDéfinirDJ(bot));
             add(new SkipratioCmd(bot));
-            add(new SettcCmd(bot));
-            add(new SetvcCmd(bot));
-            add(new AutoplaylistCmd(bot));
-            add(new ServerListCmd(bot));
+            add(new CmdDéfinirSalonTexte(bot));
+            add(new CmdDéfinirSalonVocal(bot));
+            add(new CmdListeAutoLecture(bot));
+            add(new CommandeListeServeurs(bot));
             // Owner
             add(new DebugCmd(bot));
-            add(new SetavatarCmd(bot));
-            add(new SetgameCmd(bot));
-            add(new SetnameCmd(bot));
-            add(new SetstatusCmd(bot));
+            add(new CommandeDefinirAvatar(bot));
+            add(new CommandeDefinirJeu(bot));
+            add(new CommandeDefinirNom(bot));
+            add(new CommandeDefinirStatut(bot));
             add(new PublistCmd(bot));
-            add(new ShutdownCmd(bot));
-            //add(new LeaveCmd(bot));
+            add(new CommandeArret(bot));
+            add(new LeaveCmd(bot));
         }};
 
         cb.addCommands(slashCommandList.toArray(new Command[0]));

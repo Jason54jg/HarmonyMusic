@@ -5,13 +5,13 @@ import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.jason.harmony.Bot;
 import dev.jason.harmony.slashcommands.OwnerCommand;
 
-public class ShutdownCmd extends OwnerCommand {
+public class CommandeArret extends OwnerCommand {
     private final Bot bot;
 
-    public ShutdownCmd(Bot bot) {
+    public CommandeArret(Bot bot) {
         this.bot = bot;
-        this.name = "shutdown";
-        this.help = "fermer en toute sécurité";
+        this.name = "arret";
+        this.help = "Ferme le bot en toute sécurité";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.guildOnly = false;
     }

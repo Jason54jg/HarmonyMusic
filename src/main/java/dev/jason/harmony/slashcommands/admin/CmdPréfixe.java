@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrefixCmd extends AdminCommand {
-    public PrefixCmd(Bot bot) {
+public class CmdPréfixe extends AdminCommand {
+    public CmdPréfixe(Bot bot) {
         this.name = "prefix";
         this.help = "Définir un préfixe spécifique pour le serveur";
         this.arguments = "<préfixe|aucun>";

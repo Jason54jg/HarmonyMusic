@@ -14,9 +14,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetavatarCmd extends OwnerCommand {
-    public SetavatarCmd(Bot bot) {
-        this.name = "setavatar";
+public class CommandeDefinirAvatar extends OwnerCommand {
+    public CommandeDefinirAvatar(Bot bot) {
+        this.name = "definiravatar";
         this.help = "Définit l'avatar du bot";
         this.arguments = "<url>";
         this.aliases = bot.getConfig().getAliases(this.name);

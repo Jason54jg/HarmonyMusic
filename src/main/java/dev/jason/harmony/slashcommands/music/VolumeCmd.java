@@ -22,7 +22,6 @@ public class VolumeCmd extends MusicCommand {
     public VolumeCmd(Bot bot) {
         super(bot);
         this.name = "volume";
-        this.aliases = new String[]{"vol"};
         this.help = "Règle ou affiche le volume";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.arguments = "[0-150]";
@@ -52,14 +51,13 @@ public class VolumeCmd extends MusicCommand {
                 handler.getPlayer().setVolume(nvolume);
                 settings.setVolume(nvolume);
                 event.reply(FormatUtil.volumeIcon(nvolume) + " Le volume est passé de `" + volume + "` à `" + nvolume + "`.");
-                log.info(event.getGuild().getName() + "le volume est passé de " + volume + " à " + nvolume + ".");
+                log.info(event.getGuild().getName() + " : le volume est passé de " + volume + " à " + nvolume + ".");
             }
         }
     }
 
     @Override
     public void doCommand(SlashCommandEvent event) {
-
         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
         Settings settings = event.getClient().getSettingsFor(event.getGuild());
         int volume = handler.getPlayer().getVolume();
@@ -75,7 +73,7 @@ public class VolumeCmd extends MusicCommand {
             handler.getPlayer().setVolume(nvolume);
             settings.setVolume(nvolume);
             event.reply(FormatUtil.volumeIcon(nvolume) + " Le volume est passé de `" + volume + "` à `" + nvolume + "`.").queue();
-            log.info(event.getGuild().getName() + "le volume est passé de " + volume + " à " + nvolume + ".");
+            log.info(event.getGuild().getName() + " : le volume est passé de " + volume + " à " + nvolume + ".");
         }
     }
 }

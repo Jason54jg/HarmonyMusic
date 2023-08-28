@@ -52,7 +52,7 @@ public class SpotifyCmd extends MusicCommand {
     public SpotifyCmd(Bot bot) {
         super(bot);
         this.name = "spotify";
-        this.arguments = "<title|URL|subcommand>";
+        this.arguments = "<titre|URL|sous-commande>";
         this.help = "jouer la chanson spécifiée";
         this.aliases = bot.getConfig().getAliases(this.name);
         this.beListening = true;
@@ -70,21 +70,22 @@ public class SpotifyCmd extends MusicCommand {
                 .setTimeout(1, TimeUnit.MINUTES);
 
         // Obtenir le nom d'utilisateur et le mot de passe Spotify
-        String clientId  = bot.getConfig().getSpotifyClientId();
-        String clientSecret  = bot.getConfig().getSpotifyClientSecret();
+        String clientId = bot.getConfig().getSpotifyClientId();
+        String clientSecret = bot.getConfig().getSpotifyClientSecret();
 
-        if(clientId.isEmpty() || clientSecret.isEmpty()){
+        if (clientId.isEmpty() || clientSecret.isEmpty()) {
             return;
         }
         // Émission d'un ACCESS_TOKEN
         accessToken = getAccessToken(clientId, clientSecret);
     }
 
+
     @Override
     public void doCommand(SlashCommandEvent event) {
         String trackUrl = event.getOption("tracklink").getAsString();
 
-        if(accessToken == null){
+        if (accessToken == null) {
             event.reply("Cette commande n'est pas disponible. L'activation de cette commande nécessite une configuration par le propriétaire du bot.").queue();
             return;
         }
@@ -97,7 +98,7 @@ public class SpotifyCmd extends MusicCommand {
         }
 
         if (!isSpotifyTrackUrl(trackUrl)) {
-            event.reply("Erreur: L'URL spécifiée n'est pas une URL de chanson Spotify").queue();
+            event.reply("Erreur : L'URL spécifiée n'est pas une URL de chanson Spotify.").queue();
             return;
         }
 
@@ -105,7 +106,7 @@ public class SpotifyCmd extends MusicCommand {
         String endpoint = "https://api.spotify.com/v1/tracks/" + trackId;
 
         HttpRequest request = HttpRequest.newBuilder()
-                .header("Authorization", "Bearer "+ accessToken)
+                .header("Authorization", "Bearer " + accessToken)
                 .header("Accept-Language", "en")
                 .GET()
                 .uri(URI.create(endpoint))
@@ -119,10 +120,10 @@ public class SpotifyCmd extends MusicCommand {
             String artistName = json.getJSONArray("artists").getJSONObject(0).getString("name");
             String albumImageUrl = json.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
 
-            // Obtenir des informations sur la chanson à l'aide du point de terminaison Fonctionnalités audio
+            // Obtenir des informations sur la chanson à l'aide du point de terminaison "Fonctionnalités audio"
             endpoint = "https://api.spotify.com/v1/audio-features/" + trackId;
             request = HttpRequest.newBuilder()
-                    .header("Authorization", "Bearer "+ accessToken)
+                    .header("Authorization", "Bearer " + accessToken)
                     .GET()
                     .uri(URI.create(endpoint))
                     .build();
@@ -135,30 +136,30 @@ public class SpotifyCmd extends MusicCommand {
             Color color = Color.getHSBColor((float) hue / 360, 1.0f, 1.0f);
 
             EmbedBuilder embed = new EmbedBuilder();
-            embed.setTitle("Track Information");
-            embed.addField("Track Name", trackName, true);
-            embed.addField("Album Name", albumName, true);
-            embed.addField("Artist Name", artistName, true);
+            embed.setTitle("Informations sur la piste");
+            embed.addField("Nom de la piste", trackName, true);
+            embed.addField("Nom de l'album", albumName, true);
+            embed.addField("Nom de l'artiste", artistName, true);
             embed.setImage(albumImageUrl);
             embed.setColor(color);
 
             event.getTextChannel().sendMessageEmbeds(embed.build()).queue();
 
-            event.reply("Chargement `[" + trackName + "]`...").queue(m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), "ytmsearch:"+trackName + " " + artistName, new SlashResultHandler(m, event)));
+            event.reply("Chargement `[" + trackName + "]`...").queue(m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), "ytmsearch:" + trackName + " " + artistName, new SlashResultHandler(m, event)));
         } catch (IOException | InterruptedException e) {
-            event.reply("Error: " + e.getMessage()).queue();
+            event.reply("Erreur : " + e.getMessage()).queue();
         }
     }
 
     @Override
     public void doCommand(CommandEvent event) {
         if (event.getArgs().isEmpty()) {
-            event.reply(event.getClient().getError() + " Inclure le nom de la liste de lecture.");
+            event.reply(event.getClient().getError() + " Veuillez inclure le nom de la liste de lecture.");
             return;
         }
         String trackUrl = event.getArgs();
 
-        if(accessToken == null){
+        if (accessToken == null) {
             event.reply("Cette commande n'est pas disponible. L'activation de cette commande nécessite une configuration par le propriétaire du bot.");
             return;
         }
@@ -171,7 +172,7 @@ public class SpotifyCmd extends MusicCommand {
         }
 
         if (!isSpotifyTrackUrl(trackUrl)) {
-            event.reply("Erreur: l'URL spécifiée n'est pas une URL de chanson Spotify");
+            event.reply("Erreur : l'URL spécifiée n'est pas une URL de chanson Spotify.");
             return;
         }
 
@@ -179,7 +180,7 @@ public class SpotifyCmd extends MusicCommand {
         String endpoint = "https://api.spotify.com/v1/tracks/" + trackId;
 
         HttpRequest request = HttpRequest.newBuilder()
-                .header("Authorization", "Bearer "+ accessToken)
+                .header("Authorization", "Bearer " + accessToken)
                 .header("Accept-Language", "en")
                 .GET()
                 .uri(URI.create(endpoint))
@@ -193,10 +194,10 @@ public class SpotifyCmd extends MusicCommand {
             String artistName = json.getJSONArray("artists").getJSONObject(0).getString("name");
             String albumImageUrl = json.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
 
-            // Obtenir des informations sur la chanson à l'aide du point de terminaison Fonctionnalités audio
+            // Obtenir des informations sur la chanson à l'aide du point de terminaison "Fonctionnalités audio"
             endpoint = "https://api.spotify.com/v1/audio-features/" + trackId;
             request = HttpRequest.newBuilder()
-                    .header("Authorization", "Bearer "+ accessToken)
+                    .header("Authorization", "Bearer " + accessToken)
                     .GET()
                     .uri(URI.create(endpoint))
                     .build();
@@ -209,18 +210,18 @@ public class SpotifyCmd extends MusicCommand {
             Color color = Color.getHSBColor((float) hue / 360, 1.0f, 1.0f);
 
             EmbedBuilder embed = new EmbedBuilder();
-            embed.setTitle("Track Information");
-            embed.addField("Track Name", trackName, true);
-            embed.addField("Album Name", albumName, true);
-            embed.addField("Artist Name", artistName, true);
+            embed.setTitle("Informations sur la piste");
+            embed.addField("Nom de la piste", trackName, true);
+            embed.addField("Nom de l'album", albumName, true);
+            embed.addField("Nom de l'artiste", artistName, true);
             embed.setImage(albumImageUrl);
             embed.setColor(color);
 
             event.getTextChannel().sendMessageEmbeds(embed.build()).queue();
 
-            event.reply("Chargement `[" + trackName + "]`...", m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), "ytmsearch:"+trackName + " " + artistName, new ResultHandler(m, event)));
+            event.reply("Chargement `[" + trackName + "]`...", m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), "ytmsearch:" + trackName + " " + artistName, new ResultHandler(m, event)));
         } catch (IOException | InterruptedException e) {
-            event.reply("Error: " + e.getMessage());
+            event.reply("Erreur : " + e.getMessage());
         }
     }
 
@@ -277,40 +278,37 @@ public class SpotifyCmd extends MusicCommand {
         @Override
         public void trackLoaded(AudioTrack track) {
             if (bot.getConfig().isTooLong(track)) {
-                event.getHook().sendMessage(FormatUtil.filter(event.getClient().getWarning() + "**" + track.getInfo().title + "**` est plus long que la longueur maximale autorisée."
-                        + FormatUtil.formatTime(track.getDuration()) + "` > `" + bot.getConfig().getMaxTime() + "`")).queue();
+                event.getHook().sendMessage(FormatUtil.filter(event.getClient().getWarning() + "**" + track.getInfo().title + "** est plus long que la longueur maximale autorisée : "
+                        + FormatUtil.formatTime(track.getDuration()) + " > " + bot.getConfig().getMaxTime())).queue();
                 return;
             }
             AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
             int pos = handler.addTrack(new QueuedTrack(track, event.getUser())) + 1;
             event.getHook().sendMessage(FormatUtil.filter(event.getClient().getSuccess() + "**" + track.getInfo().title
-                    + "Ajout de **(`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "."
-                    : " a été ajouté à la " + pos + "ième file d'attente de lecture."))).queue();
+                    + " : Ajout de (`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "."
+                    : " ajouté à la " + pos + "ième file d'attente de lecture."))).queue();
         }
 
         @Override
         public void playlistLoaded(AudioPlaylist playlist) {
             builder.setColor(event.getGuild().getSelfMember().getColor())
-                    .setText(FormatUtil.filter(event.getClient().getSuccess() + "Résultats de recherche:"))
+                    .setText(FormatUtil.filter(event.getClient().getSuccess() + "Résultats de recherche :"))
                     .setChoices()
-                    .setSelection((msg, i) ->
-                    {
+                    .setSelection((msg, i) -> {
                         AudioTrack track = playlist.getTracks().get(i - 1);
                         if (bot.getConfig().isTooLong(track)) {
-                            event.getHook().sendMessage(event.getClient().getWarning() + "**" + track.getInfo().title + "**` est plus long que la longueur maximale autorisée."
-                                    + FormatUtil.formatTime(track.getDuration()) + "` > `" + bot.getConfig().getMaxTime() + "`").queue();
+                            event.getHook().sendMessage(event.getClient().getWarning() + "**" + track.getInfo().title + "** est plus long que la longueur maximale autorisée : "
+                                    + FormatUtil.formatTime(track.getDuration()) + " > " + bot.getConfig().getMaxTime()).queue();
                             return;
                         }
                         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                         int pos = handler.addTrack(new QueuedTrack(track, event.getUser())) + 1;
                         event.getHook().sendMessage(event.getClient().getSuccess() + "**" + track.getInfo().title
-                                + "Ajout de **(`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "."
-                                : " ajouté à " + pos + "ième file d'attente de lecture. ")).queue();
+                                + " : Ajout de (`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "."
+                                : " ajouté à la " + pos + "ième file d'attente de lecture.")).queue();
                     })
-                    .setCancel((msg) -> {
-                    })
-                    .setUsers(event.getUser())
-            ;
+                    .setCancel((msg) -> {})
+                    .setUsers(event.getUser());
             for (int i = 0; i < 4 && i < playlist.getTracks().size(); i++) {
                 AudioTrack track = playlist.getTracks().get(i);
                 builder.addChoices("`[" + FormatUtil.formatTime(track.getDuration()) + "]` [**" + track.getInfo().title + "**](" + track.getInfo().uri + ")");
@@ -320,16 +318,15 @@ public class SpotifyCmd extends MusicCommand {
 
         @Override
         public void noMatches() {
-            event.getHook().sendMessage(FormatUtil.filter(event.getClient().getWarning() + " J'ai cherché la chanson mais je ne l'ai pas trouvée. `")).queue();
+            event.getHook().sendMessage(FormatUtil.filter(event.getClient().getWarning() + " J'ai cherché la chanson mais je ne l'ai pas trouvée. ")).queue();
         }
 
         @Override
         public void loadFailed(FriendlyException throwable) {
-
             if (throwable.severity == FriendlyException.Severity.COMMON)
-                event.getHook().sendMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement: " + throwable.getMessage()).queue();
+                event.getHook().sendMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement : " + throwable.getMessage()).queue();
             else
-                event.getHook().sendMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement").queue();
+                event.getHook().sendMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement.").queue();
         }
     }
 
@@ -345,35 +342,35 @@ public class SpotifyCmd extends MusicCommand {
         @Override
         public void trackLoaded(AudioTrack track) {
             if (bot.getConfig().isTooLong(track)) {
-                m.editMessage(FormatUtil.filter(event.getClient().getWarning() + "**" + track.getInfo().title + "**` est plus long que la longueur maximale autorisée."
-                        + FormatUtil.formatTime(track.getDuration()) + "` > `" + bot.getConfig().getMaxTime() + "`")).queue();
+                m.editMessage(FormatUtil.filter(event.getClient().getWarning() + "**" + track.getInfo().title + "** est plus longue que la durée maximale autorisée : "
+                        + FormatUtil.formatTime(track.getDuration()) + " > " + bot.getConfig().getMaxTime())).queue();
                 return;
             }
             AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
             int pos = handler.addTrack(new QueuedTrack(track, event.getAuthor())) + 1;
             m.editMessage(FormatUtil.filter(event.getClient().getSuccess() + "**" + track.getInfo().title
-                    + "Ajout de **(`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "."
-                    : " a été ajouté à la " + pos + "ième file d'attente de lecture."))).queue();
+                    + "** ajoutée (`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "."
+                    : " a été ajoutée à la " + pos + "ème file d'attente de lecture."))).queue();
         }
 
         @Override
         public void playlistLoaded(AudioPlaylist playlist) {
             builder.setColor(event.getSelfMember().getColor())
-                    .setText(FormatUtil.filter(event.getClient().getSuccess() + "Résultats de recherche:"))
+                    .setText(FormatUtil.filter(event.getClient().getSuccess() + "Résultats de recherche :"))
                     .setChoices()
                     .setSelection((msg, i) ->
                     {
                         AudioTrack track = playlist.getTracks().get(i - 1);
                         if (bot.getConfig().isTooLong(track)) {
-                            event.replyWarning("Cette chanson (**" + track.getInfo().title + "**) est plus longue que la longueur maximale autorisée: `"
-                                    + FormatUtil.formatTime(track.getDuration()) + "` > `" + bot.getConfig().getMaxTime() + "`");
+                            event.replyWarning("Cette chanson (**" + track.getInfo().title + "**) est plus longue que la durée maximale autorisée : `"
+                                    + FormatUtil.formatTime(track.getDuration()) + " > " + bot.getConfig().getMaxTime() + "`");
                             return;
                         }
                         AudioHandler handler = (AudioHandler) event.getGuild().getAudioManager().getSendingHandler();
                         int pos = handler.addTrack(new QueuedTrack(track, event.getAuthor())) + 1;
                         event.replySuccess("**" + FormatUtil.filter(track.getInfo().title)
-                                + "** (`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0? "Commencer à jouer."
-                                : " a été ajouté à la " + pos + "ième file d'attente de lecture."));
+                                + "** (`" + FormatUtil.formatTime(track.getDuration()) + "`) " + (pos == 0 ? "Commencer à jouer."
+                                : " a été ajoutée à la " + pos + "ème file d'attente de lecture."));
                     })
                     .setCancel((msg) -> {
                     })
@@ -388,7 +385,7 @@ public class SpotifyCmd extends MusicCommand {
 
         @Override
         public void noMatches() {
-            m.editMessage(FormatUtil.filter(event.getClient().getWarning() + " J'ai recherché une chanson, mais je ne l'ai pas trouvée.`")).queue();
+            m.editMessage(FormatUtil.filter(event.getClient().getWarning() + " J'ai effectué une recherche de chanson, mais je ne l'ai pas trouvée.")).queue();
         }
 
         @Override
@@ -397,7 +394,7 @@ public class SpotifyCmd extends MusicCommand {
             if (throwable.severity == FriendlyException.Severity.COMMON)
                 m.editMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement : " + throwable.getMessage()).queue();
             else
-                m.editMessage(event.getClient().getError() + "Une erreur s'est produite lors du chargement").queue();
+                m.editMessage(event.getClient().getError() + " Une erreur s'est produite lors du chargement.").queue();
         }
     }
 }

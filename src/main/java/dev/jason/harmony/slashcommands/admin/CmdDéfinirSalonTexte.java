@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SettcCmd extends AdminCommand {
-    public SettcCmd(Bot bot) {
-        this.name = "settc";
+public class CmdDéfinirSalonTexte extends AdminCommand {
+    public CmdDéfinirSalonTexte(Bot bot) {
+        this.name = "definirsalontexte";
         this.help = "Définir le canal de commande du bot";
         this.arguments = "<Canal|aucun>";
         this.aliases = bot.getConfig().getAliases(this.name);

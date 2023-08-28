@@ -32,7 +32,6 @@ public class StopCmd extends DJCommand {
 
         List<OptionData> options = new ArrayList<>();
         options.add(new OptionData(OptionType.STRING, "option", "Entrez `save` pour enregistrer la liste de lecture", false));
-
         this.options = options;
     }
 
@@ -44,7 +43,7 @@ public class StopCmd extends DJCommand {
 
         if (queue.size() > 0 && event.getArgs().matches("save")) {
             cache.Save(event.getGuild().getId(), handler.getQueue());
-            event.reply(event.getClient().getSuccess() + " En attente de lecture " + queue.size() + "Chanson enregistrée et arrêtée.");
+            event.reply(event.getClient().getSuccess() + " En attente de lecture " + queue.size() + " Chanson enregistrée et arrêtée.");
             log.info(event.getGuild().getName() + "Enregistré la file d'attente de lecture et déconnecté du canal vocal.");
         } else {
             event.reply(event.getClient().getSuccess() + "La file d'attente de lecture a été supprimée et la lecture a cessé.");
@@ -63,7 +62,7 @@ public class StopCmd extends DJCommand {
         CacheLoader cache = bot.getCacheLoader();
         FairQueue<QueuedTrack> queue = handler.getQueue();
 
-        log.debug("再生待ちのサイズ：" + queue.size());
+        log.debug("Taille de la file d'attente de lecture : " + queue.size());
 
         if (event.getOption("option") == null) {
             event.reply(event.getClient().getSuccess() + "La file d'attente de lecture a été supprimée et la lecture a cessé.").queue();
@@ -75,7 +74,7 @@ public class StopCmd extends DJCommand {
 
         if (queue.size() > 0 && event.getOption("option").getAsString().equals("save")) {
             cache.Save(event.getGuild().getId(), handler.getQueue());
-            event.reply(event.getClient().getSuccess() + " En attente de lecture " + queue.size() + "Chanson enregistrée et arrêtée.").queue();
+            event.reply(event.getClient().getSuccess() + " En attente de lecture " + queue.size() + " Chanson enregistrée et arrêtée.").queue();
             log.info(event.getGuild().getName() + "Enregistré la file d'attente de lecture et déconnecté du canal vocal.");
         } else {
             event.reply(event.getClient().getSuccess() + "La file d'attente de lecture a été supprimée et la lecture a cessé.").queue();
@@ -90,8 +89,8 @@ public class StopCmd extends DJCommand {
         String[] cmdOptions = {"save"};
         if (event.getName().equals("stop") && event.getFocusedOption().getName().equals("option")) {
             List<Command.Choice> options = Stream.of(cmdOptions)
-                    .filter(word -> word.startsWith(event.getFocusedOption().getValue())) // only display words that start with the user's current input
-                    .map(word -> new Command.Choice(word, word)) // map the words to choices
+                    .filter(word -> word.startsWith(event.getFocusedOption().getValue())) // ne montrer que les mots commençant par l'entrée actuelle de l'utilisateur
+                    .map(word -> new Command.Choice(word, word)) // mapper les mots en choix
                     .collect(Collectors.toList());
             event.replyChoices(options).queue();
         }

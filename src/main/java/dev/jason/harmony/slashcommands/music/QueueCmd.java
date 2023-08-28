@@ -139,11 +139,8 @@ public class QueueCmd extends MusicCommand {
             sb.append(ah.getPlayer().isPaused() ? Harmony.PAUSE_EMOJI : Harmony.PLAY_EMOJI).append(" **")
                     .append(ah.getPlayer().getPlayingTrack().getInfo().title).append("**\n");
         }
-        return FormatUtil.filter(sb.append(success).append(" Liste des chansons d'attente | ").append(songslength)
+        return FormatUtil.filter(sb.append(success).append(" Liste des chansons dans la file d'attente | ").append(songslength)
                 .append(" Entrée | `").append(FormatUtil.formatTime(total)).append("` ")
-                // RepeatMode.OFF - ""
-                // RepeatMode.ALL - QueueCmd.REPEAT_ALL
-                // RepeatMode.SINGLE = QueueCmd.REPEAT_SINGLE
                 .append(repeatmode != RepeatMode.OFF ? "| " + (repeatmode == RepeatMode.ALL ? REPEAT_ALL : REPEAT_SINGLE) : "").toString());
     }
 }
